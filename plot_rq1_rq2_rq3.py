@@ -481,14 +481,14 @@ def plot_rq4_re_boxplot(df, plot_dir):
     methods = df['method'].unique()
     colors_map = {
         'Static Stacking': '#4C72B0',
-        'Online Stacking (SW)': '#DD8452',
+        'Online Stacking (SGD+Drift)': '#DD8452',
         'EWA Baseline': '#55A868'
     }
 
     data = [df[df['method'] == m]['RE'].values for m in methods]
     fig, ax = plt.subplots(figsize=(8, 5))
     bp = ax.boxplot(
-        data, labels=[m.replace(' (SW)', '\n(Sliding Window)') for m in methods],
+        data, labels=[m.replace(' (SGD+Drift)', '\n(SGD+Drift)') for m in methods],
         patch_artist=True, showfliers=True,
         flierprops=dict(marker='o', markersize=3, alpha=0.5)
     )
@@ -521,7 +521,7 @@ def plot_rq4_success_bar(df, plot_dir):
     methods = df['method'].unique()
     colors_map = {
         'Static Stacking': '#4C72B0',
-        'Online Stacking (SW)': '#DD8452',
+        'Online Stacking (SGD+Drift)': '#DD8452',
         'EWA Baseline': '#55A868'
     }
 
@@ -531,7 +531,7 @@ def plot_rq4_success_bar(df, plot_dir):
         rates.append(subset['success'].apply(lambda x: x == True or x == 'TRUE').mean())
 
     fig, ax = plt.subplots(figsize=(7, 5))
-    labels = [m.replace(' (SW)', '\n(SW)') for m in methods]
+    labels = [m.replace(' (SGD+Drift)', '\n(SGD+Drift)') for m in methods]
     bars = ax.bar(labels, rates,
                   color=[colors_map.get(m, '#999999') for m in methods],
                   alpha=0.8, edgecolor='black', linewidth=0.5)
@@ -558,7 +558,7 @@ def plot_rq4_rolling_re(df, plot_dir):
     methods = df['method'].unique()
     colors_map = {
         'Static Stacking': '#4C72B0',
-        'Online Stacking (SW)': '#DD8452',
+        'Online Stacking (SGD+Drift)': '#DD8452',
         'EWA Baseline': '#55A868'
     }
     window = 30  # 滑动窗口大小

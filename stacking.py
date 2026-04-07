@@ -8,10 +8,11 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from mpmath import mp
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.model_selection import KFold
 from statsmodels.tools import add_constant
 from itertools import combinations
+from collections import deque
 
 mp.dps = 50
 
@@ -31,9 +32,18 @@ class StackingEnsemble:
         self.model_index_sets = []     # 所有基模型的特征索引集
         self.n_features = None
         self.use_log_odds = True       # 在对数几率空间进行组合
+        # Online learning state
         self._online_buffer_X = []
         self._online_buffer_y = []
         self._online_window_size = 100
+        self._samples_seen = 0        # 累计已见样本数
+        # Drift detection state (ADWIN-inspired)
+        self._drift_error_window = deque(maxlen=200)
+        self._drift_detected = False
+        self._drift_count = 0
+        self._retrain_buffer_X = []
+        self._retrain_buffer_y = []
+        self._retrain_buffer_max = 150
 
     def _enumerate_models_occam(self, X, y):
         """使用 Occam's window 枚举所有变量子集模型。
@@ -88,13 +98,21 @@ class StackingEnsemble:
 
     def fit(self, X_raw, y):
         """
-        训练 Stacking 模型
+        训练 Stacking 模型（可用于全量训练或 warm-up 冷启动）。
+        对小数据集自动降低 CV 折数。
+
         X_raw : 原始特征（不含常数项）
         y     : 目标变量 (0/1)
         """
         X_with_const = add_constant(X_raw)
         self.n_features = X_with_const.shape[1]
         y_arr = np.asarray(y, dtype=float)
+        n_samples = len(y_arr)
+
+        # 自动调整 CV 折数：确保每折至少有 10 个样本
+        actual_folds = min(self.n_folds, max(2, n_samples // 10))
+        if actual_folds < self.n_folds:
+            print(f"  Auto-adjusted n_folds: {self.n_folds} → {actual_folds} (small dataset: {n_samples} samples)")
 
         # 步骤1：枚举所有基模型（变量子集）
         print("  Step 1: Enumerating model space...")
@@ -102,12 +120,11 @@ class StackingEnsemble:
         print(f"  Number of base models: {len(self.model_index_sets)}")
 
         n_models = len(self.model_index_sets)
-        n_samples = len(y_arr)
 
         # 步骤2：K 折交叉验证生成元特征（基模型预测概率）
-        print(f"  Step 2: {self.n_folds}-fold cross validation...")
+        print(f"  Step 2: {actual_folds}-fold cross validation...")
         meta_probs = np.zeros((n_samples, n_models))
-        kf = KFold(n_splits=self.n_folds, shuffle=True, random_state=self.random_state)
+        kf = KFold(n_splits=actual_folds, shuffle=True, random_state=self.random_state)
 
         for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_with_const)):
             X_train_fold = X_with_const.iloc[train_idx]
@@ -122,19 +139,22 @@ class StackingEnsemble:
                 except Exception:
                     meta_probs[val_idx, i] = 0.5
 
-        # 步骤3：训练元学习器（在 log-odds 空间）
-        print("  Step 3: Training meta-learner (log-odds space)...")
+        # 步骤3：训练元学习器（SGDClassifier with log_loss in log-odds space）
+        print("  Step 3: Training meta-learner (SGDClassifier, log-odds space)...")
         if self.use_log_odds:
             meta_features = self._prob_to_logodds(meta_probs)
         else:
             meta_features = meta_probs
 
-        self.meta_learner = LogisticRegression(
-            max_iter=2000,
-            C=0.1,          # 较强正则化，防止过拟合
+        self.meta_learner = SGDClassifier(
+            loss='log_loss',
+            penalty='l2',
+            alpha=0.1,         # L2 regularization strength
+            learning_rate='constant',
+            eta0=0.01,         # conservative learning rate for stability
             random_state=self.random_state,
-            solver='lbfgs',
-            penalty='l2'
+            max_iter=2000,
+            tol=1e-4,
         )
         self.meta_learner.fit(meta_features, y_arr)
 
@@ -150,7 +170,8 @@ class StackingEnsemble:
                 self.base_models.append((idx_set, None))
 
         valid = sum(1 for _, m in self.base_models if m is not None)
-        print(f"  Done. Valid models: {valid}/{n_models}")
+        self._samples_seen = n_samples
+        print(f"  Done. Valid models: {valid}/{n_models}, samples_seen={self._samples_seen}")
         return self
 
     def _compute_meta_features(self, row_data_with_const):
@@ -186,9 +207,24 @@ class StackingEnsemble:
         return proba[0]
 
     def online_update(self, X_new_raw, y_new, window_size=100):
-        """滑动窗口在线更新 meta-learner（基模型保持冻结）"""
+        """
+        Online update of meta-learner using SGDClassifier.partial_fit() + drift detection.
+
+        Uses partial_fit() for incremental weight updates one sample at a time.
+        Monitors prediction error with an ADWIN-inspired drift detector:
+        when drift is detected, retrain on the recent buffer to adapt faster.
+
+        Parameters
+        ----------
+        X_new_raw : DataFrame
+            Raw features (without constant) for one or more new samples.
+        y_new : int/float or array-like
+            True label(s) for the new sample(s).
+        window_size : int
+            Max size of the retrain buffer (used when drift triggers full retrain).
+        """
         self._online_window_size = window_size
-        X_new_with_const = add_constant(X_new_raw)
+        X_new_with_const = add_constant(X_new_raw, has_constant='add')
 
         if X_new_with_const.ndim == 1 or X_new_with_const.shape[0] == 1:
             rows = [X_new_with_const.iloc[0:1] if hasattr(X_new_with_const, 'iloc') else X_new_with_const]
@@ -198,30 +234,86 @@ class StackingEnsemble:
             labels = list(np.asarray(y_new, dtype=float).ravel())
 
         for row, label in zip(rows, labels):
+            self._samples_seen += 1
             mf = self._compute_meta_features(row)
-            self._online_buffer_X.append(mf[0])
-            self._online_buffer_y.append(label)
 
-        if len(self._online_buffer_X) > self._online_window_size:
-            self._online_buffer_X = self._online_buffer_X[-self._online_window_size:]
-            self._online_buffer_y = self._online_buffer_y[-self._online_window_size:]
+            # --- Drift detection: monitor prediction error ---
+            pred_proba = self.meta_learner.predict_proba(mf)[:, 1][0]
+            error = abs(pred_proba - label)
+            self._drift_error_window.append(error)
+            drift = self._detect_drift()
 
-        if len(self._online_buffer_X) >= 20:
-            buf_X = np.array(self._online_buffer_X)
-            buf_y = np.array(self._online_buffer_y)
-            self.meta_learner = LogisticRegression(
-                max_iter=2000,
-                C=0.1,
-                random_state=self.random_state,
-                solver='lbfgs',
-                penalty='l2'
-            )
-            self.meta_learner.fit(buf_X, buf_y)
+            # --- Maintain retrain buffer for drift recovery ---
+            self._retrain_buffer_X.append(mf[0])
+            self._retrain_buffer_y.append(label)
+            if len(self._retrain_buffer_X) > self._retrain_buffer_max:
+                self._retrain_buffer_X = self._retrain_buffer_X[-self._retrain_buffer_max:]
+                self._retrain_buffer_y = self._retrain_buffer_y[-self._retrain_buffer_max:]
+
+            if drift and len(self._retrain_buffer_X) >= 20:
+                # Drift detected: retrain on recent buffer
+                buf_X = np.array(self._retrain_buffer_X)
+                buf_y = np.array(self._retrain_buffer_y)
+                self.meta_learner = SGDClassifier(
+                    loss='log_loss',
+                    penalty='l2',
+                    alpha=0.1,
+                    learning_rate='constant',
+                    eta0=0.01,
+                    random_state=self.random_state,
+                    max_iter=2000,
+                    tol=1e-4,
+                )
+                self.meta_learner.fit(buf_X, buf_y)
+                self._drift_error_window.clear()
+                self._drift_count += 1
+            else:
+                # Normal: incremental update via partial_fit
+                self.meta_learner.partial_fit(mf, [label], classes=[0, 1])
+
+    def _detect_drift(self, min_window=30, threshold=0.15):
+        """
+        ADWIN-inspired drift detector.
+
+        Compares the mean error in the recent half of the window vs the older half.
+        If the difference exceeds the threshold, drift is signaled.
+
+        Parameters
+        ----------
+        min_window : int
+            Minimum number of error observations before drift detection activates.
+        threshold : float
+            Absolute difference in mean error between halves to trigger drift.
+
+        Returns
+        -------
+        bool
+            True if drift is detected.
+        """
+        errors = self._drift_error_window
+        if len(errors) < min_window:
+            return False
+        n = len(errors)
+        mid = n // 2
+        old_mean = np.mean(list(errors)[:mid])
+        new_mean = np.mean(list(errors)[mid:])
+        # Drift if recent errors are significantly higher than older errors
+        if new_mean - old_mean > threshold:
+            self._drift_detected = True
+            return True
+        self._drift_detected = False
+        return False
 
     def reset_online_state(self):
-        """清除在线缓冲区，恢复为纯离线状态"""
+        """清除在线缓冲区和漂移检测状态，恢复为纯离线状态"""
         self._online_buffer_X = []
         self._online_buffer_y = []
+        self._drift_error_window.clear()
+        self._drift_detected = False
+        self._drift_count = 0
+        self._retrain_buffer_X = []
+        self._retrain_buffer_y = []
+        self._samples_seen = 0
 
     def predict_proba(self, X_raw):
         """

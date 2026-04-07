@@ -18,18 +18,18 @@
 | RQ1 | Stacking 与 BMA 的预测精度对比（Precision / Recall / F1） | `stacking_prediction.py` |
 | RQ2 | Stacking 与 BMA 的适应决策质量对比（RE / 成功率） | `stacking_adaptation.py` |
 | RQ3 | Stacking 与 BMA 的计算花费对比（训练时间 vs 样本量/变量数） | `stacking_cost.py` |
-| RQ4 | 在线学习是否提升 Stacking 的适应性能（滑动窗口 vs EWA baseline） | `experiment_online.py` |
+| RQ4 | 在线学习是否提升 Stacking 的适应性能（SGD partial_fit + 漂移检测 vs EWA baseline） | `experiment_online.py` |
 
 ## 项目结构
 
 ```
 stacking-package/
-├── stacking.py                 # 核心：StackingEnsemble 类（离线训练 + 在线滑动窗口更新）
+├── stacking.py                 # 核心：StackingEnsemble 类（SGDClassifier 元学习器 + 在线 partial_fit + 漂移检测）
 ├── ewa_ensemble.py             # EWA 指数加权聚合（在线学习 baseline）
 ├── stacking_prediction.py      # RQ1 实验：预测精度对比
 ├── stacking_adaptation.py      # RQ2 实验：适应决策对比
 ├── stacking_cost.py            # RQ3 实验：计算花费对比（调用 bma_cost.R 获取 BMA 数据）
-├── experiment_online.py        # RQ4 实验：在线学习对比（Static / SW / EWA）
+├── experiment_online.py        # RQ4 实验：在线学习对比（Static / SGD+Drift / EWA）
 ├── plot_rq1_rq2_rq3.py        # 绘图脚本（RQ1 精度柱状图 / RQ2 RE 箱线图 / RQ3 热力图）
 ├── data/                       # 数据集
 │   ├── training_rescueRobot_450.csv       # RQ1/RQ2 训练集（450 样本，9 特征）
@@ -67,17 +67,24 @@ stacking-package/
 采用两层架构：
 
 - **Level-0 基模型**：枚举所有变量子集的 Logistic 回归，通过 Occam's window 剪枝（BIC 似然比 < 1/20 的模型被淘汰）
-- **Level-1 元学习器**：在 log-odds 空间上训练的 L2 正则化 Logistic 回归（C=0.1），通过 10 折交叉验证生成元特征防止过拟合
+- **Level-1 元学习器**：在 log-odds 空间上训练的 `SGDClassifier(loss='log_loss', penalty='l2', alpha=0.1, eta0=0.01)`，通过 10 折交叉验证生成元特征防止过拟合。使用 SGDClassifier 而非 LogisticRegression 的原因是 SGDClassifier 支持 `partial_fit()`，可以逐样本增量更新权重而无需全量重训。
 
-### 2. 滑动窗口在线更新（RQ4 主方法）
+### 2. SGD 增量更新 + 漂移检测（RQ4 主方法）
 
 在线阶段每收到一个样本的真实反馈后：
 
 1. 冻结基模型，仅计算该样本的元特征（29 维 log-odds 向量）
-2. 将 (元特征, 标签) 加入滑动窗口缓冲区（默认大小 100）
-3. 缓冲区 >= 20 条时，用窗口数据重新训练 meta-learner
+2. 计算预测误差 `|p_t − y_t|`，送入 ADWIN 风格的漂移检测器
+3. **正常情况**：调用 `meta_learner.partial_fit(mf, [y_t])` 增量更新权重（无需缓冲区，无需全量重训）
+4. **漂移检测触发**：当误差窗口的近期均值显著高于历史均值（差值 > 0.15）时，用近期缓冲数据（最多 150 条）全量重训 meta-learner，然后重置漂移检测器
 
-优势：基模型不需重训（耗时最大部分），仅更新轻量 meta-learner。
+**优势**：
+- 基模型不需重训（耗时最大部分），仅更新轻量 meta-learner
+- `partial_fit()` 实现真正的逐样本在线学习，权重逐步漂移向新模式
+- 漂移检测确保只在环境真正变化时触发重训，避免固定周期的浪费
+- 代码改动最小，自然融入现有框架
+
+**潜在风险**：对学习率敏感，单个噪声样本可能将权重推向错误方向。因此使用保守学习率（eta0=0.01）并结合漂移检测器作为安全网。可通过实验经验性调整学习率获得更好效果。
 
 ### 3. 指数加权聚合 EWA（RQ4 baseline）
 
@@ -126,8 +133,22 @@ w_i ← w_i × exp(-η × loss_i)，归一化
 | 方法 | 说明 |
 |------|------|
 | Static Stacking | 纯离线，无更新（baseline） |
-| Online Stacking (SW) | 滑动窗口 meta-learner 重训（主方法） |
+| Online Stacking (SGD+Drift) | SGDClassifier partial_fit + ADWIN 漂移检测（主方法） |
 | EWA Baseline | 指数加权在线聚合（轻量 baseline） |
+
+在线更新流程：
+
+```
+for each new (x_t, y_t):
+    p_t ← meta_learner.predict_proba(x_t)
+    error_t ← |p_t − y_t|
+    feed error_t into drift detector (ADWIN-inspired)
+    if drift_detected:
+        retrain meta_learner on recent buffer
+        reset drift detector
+    else:
+        meta_learner.partial_fit(x_t, [y_t])  # incremental update
+```
 
 绘图输出：`plots/rq4_re_comparison.png`（RE 箱线图）、`rq4_success_rate.png`（成功率）、`rq4_rolling_re.png`（RE 随时间趋势）。
 
@@ -169,9 +190,12 @@ python plot_rq1_rq2_rq3.py
 | 参数 | 默认值 | 所属 | 说明 |
 |------|--------|------|------|
 | `n_folds` | 10（RQ1/2/4）, 3（RQ3） | StackingEnsemble | 交叉验证折数 |
-| `C` | 0.1 | StackingEnsemble | Meta-learner L2 正则化强度 |
+| `alpha` | 0.1 | SGDClassifier | Meta-learner L2 正则化强度 |
+| `eta0` | 0.01 | SGDClassifier | SGD 学习率（保守值，防止噪声样本不稳定） |
 | `max_vars` | None (自动 min(nCols, 15)) | StackingEnsemble | 基模型最大变量子集大小 |
-| `window_size` | 100 | online_update | 滑动窗口大小 |
+| `_retrain_buffer_max` | 150 | StackingEnsemble | 漂移重训时使用的最大近期样本数 |
+| `drift threshold` | 0.15 | _detect_drift | 新旧误差均值差超过此值触发漂移 |
+| `drift min_window` | 30 | _detect_drift | 漂移检测激活所需最少观测数 |
 | `eta` | 0.5 | EWAEnsemble | EWA 学习率 |
 | `use_log_odds` | True | 两者 | 是否在 log-odds 空间聚合 |
 | `TIMEOUT` | 200s | stacking_cost.py | RQ3 单次训练超时阈值 |
