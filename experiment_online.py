@@ -517,6 +517,238 @@ def run_rq2(rq2_snapshots, df_val, n_test_samples=20):
 
 
 # ============================================================
+# RQ3: Computational efficiency (partial_fit vs BMA retrain)
+# ============================================================
+def run_rq3(X_warmup, y_warmup, X_stream, y_stream):
+    """
+    RQ3: 在线 Stacking 的计算效率是否优于 BMA 的重训策略？
+
+    测量：
+    - Online Stacking 单步更新时间 (partial_fit + drift detection)
+    - BMA 全量重训时间（随数据量增长）
+    在不同累积数据量下对比。
+
+    指标：累计计算时间 vs 样本数、单次更新延迟。
+    """
+    print("\n=== RQ3: Computational Efficiency (Online Stacking vs BMA Retrain) ===")
+
+    # 评估点：累积数据量
+    eval_sizes = [100, 200, 300, 400, 600, 800]
+    eval_sizes = [s for s in eval_sizes if s <= len(X_warmup) + len(X_stream)]
+
+    # 构建累积数据
+    all_X = pd.concat([X_warmup, X_stream], ignore_index=True)
+    all_y = np.concatenate([np.asarray(y_warmup, dtype=float),
+                            np.asarray(y_stream, dtype=float)])
+
+    results = []
+
+    # --- Online Stacking: warm-up + stream ---
+    print("  Measuring Online Stacking update times...")
+    stacking = StackingEnsemble(n_folds=10, random_state=42)
+
+    t0 = time.time()
+    stacking.fit(X_warmup, y_warmup)
+    warmup_time = time.time() - t0
+
+    online_cumulative = warmup_time
+    online_times_per_sample = []
+    X_stream_const = add_constant(X_stream)
+
+    for t in range(len(X_stream)):
+        x_raw = X_stream.iloc[t:t + 1]
+        y_t = float(y_stream.iloc[t])
+        t0 = time.time()
+        stacking.online_update(x_raw, y_t)
+        dt = time.time() - t0
+        online_times_per_sample.append(dt)
+        online_cumulative += dt
+
+    # --- BMA: full retrain at each eval_size ---
+    print("  Measuring BMA retrain times at different data sizes...")
+    bma_results = []
+    for size in eval_sizes:
+        X_sub = add_constant(all_X.iloc[:size])
+        y_sub = all_y[:size]
+        t0 = time.time()
+        BMA(y_sub, X_sub, RegType='Logit').fit()
+        bma_time = time.time() - t0
+        bma_results.append({'n_samples': size, 'bma_retrain_time': bma_time})
+        print(f"    BMA retrain n={size}: {bma_time:.4f}s")
+
+    # --- 汇总：在相同数据量下对比 ---
+    print(f"\n  {'Data Size':>10} {'Online Cumul':>14} {'BMA Retrain':>14} {'Speedup':>10}")
+    print(f"  {'-' * 52}")
+
+    comparison = []
+    warmup_n = len(X_warmup)
+    for bma_r in bma_results:
+        size = bma_r['n_samples']
+        bma_t = bma_r['bma_retrain_time']
+        # Online cumulative time up to this data size
+        stream_steps = max(0, size - warmup_n)
+        online_cum = warmup_time + sum(online_times_per_sample[:stream_steps])
+        speedup = bma_t / online_cum if online_cum > 0 else float('inf')
+
+        # Online 单步平均
+        if stream_steps > 0:
+            avg_step = sum(online_times_per_sample[:stream_steps]) / stream_steps
+        else:
+            avg_step = 0.0
+
+        print(f"  {size:>10} {online_cum:>13.4f}s {bma_t:>13.4f}s {speedup:>9.2f}x")
+
+        comparison.append({
+            'n_samples': size,
+            'online_cumulative_time': online_cum,
+            'online_avg_step_time': avg_step,
+            'bma_retrain_time': bma_t,
+            'speedup': speedup,
+        })
+
+    return {
+        'warmup_time': warmup_time,
+        'online_mean_step_time': float(np.mean(online_times_per_sample)),
+        'comparison': comparison,
+    }
+
+
+# ============================================================
+# RQ4: Drift detection ablation
+# ============================================================
+def run_rq4(X_warmup, y_warmup, X_stream, y_stream,
+            thresholds=(0.05, 0.10, 0.15, 0.20),
+            learning_rates=(0.001, 0.005, 0.01, 0.05)):
+    """
+    RQ4: 漂移检测的敏感性分析（消融实验）。
+
+    对比三种在线更新策略：
+      a. 纯 partial_fit（无漂移检测）
+      b. partial_fit + 漂移检测（默认方案）
+      c. 固定周期重训（每 K 步重训一次）
+
+    并对漂移阈值和学习率做敏感性分析。
+    指标：预测误差、漂移触发次数、累计计算时间。
+    """
+    print("\n=== RQ4: Drift Detection Ablation ===")
+
+    X_stream_const = add_constant(X_stream)
+
+    def eval_online(stacking_model, label):
+        """Run prequential eval on stream, return summary."""
+        preds, labels_list = [], []
+        t0_total = time.time()
+        for t in range(len(X_stream)):
+            row = X_stream_const.iloc[t:t + 1]
+            y_t = float(y_stream.iloc[t])
+            p_t = stacking_model.predict_single(row)
+            preds.append(p_t)
+            labels_list.append(int(y_t))
+            x_raw = X_stream.iloc[t:t + 1]
+            stacking_model.online_update(x_raw, y_t)
+        total_time = time.time() - t0_total
+        m = compute_window_metrics(labels_list, preds)
+        return {
+            'label': label,
+            'f1': m['f1'],
+            'precision': m['precision'],
+            'recall': m['recall'],
+            'mean_abs_error': m['mean_abs_error'],
+            'drift_count': stacking_model._drift_count,
+            'time': total_time,
+        }
+
+    def make_fresh_stacking():
+        s = StackingEnsemble(n_folds=10, random_state=42)
+        s.fit(X_warmup, y_warmup)
+        return s
+
+    results = []
+
+    # --- (a) 纯 partial_fit（禁用漂移检测：阈值设为极大） ---
+    print("  (a) Pure partial_fit (no drift)...")
+    s = make_fresh_stacking()
+    s._detect_drift = lambda *a, **kw: False  # 禁用漂移
+    r = eval_online(s, 'no_drift')
+    results.append(r)
+    print(f"      F1={r['f1']:.4f}  MAE={r['mean_abs_error']:.4f}  drift={r['drift_count']}  time={r['time']:.2f}s")
+
+    # --- (b) partial_fit + 漂移检测（默认参数） ---
+    print("  (b) partial_fit + drift detection (default threshold=0.15, eta0=0.01)...")
+    s = make_fresh_stacking()
+    r = eval_online(s, 'drift_default')
+    results.append(r)
+    print(f"      F1={r['f1']:.4f}  MAE={r['mean_abs_error']:.4f}  drift={r['drift_count']}  time={r['time']:.2f}s")
+
+    # --- (c) 固定周期重训 ---
+    for K in [50, 100]:
+        print(f"  (c) Fixed-period retrain every K={K} steps...")
+        s = make_fresh_stacking()
+        s._detect_drift = lambda *a, **kw: False  # 禁用自动漂移
+        preds, labels_list = [], []
+        t0_total = time.time()
+        for t in range(len(X_stream)):
+            row = X_stream_const.iloc[t:t + 1]
+            y_t = float(y_stream.iloc[t])
+            p_t = s.predict_single(row)
+            preds.append(p_t)
+            labels_list.append(int(y_t))
+            x_raw = X_stream.iloc[t:t + 1]
+            s.online_update(x_raw, y_t)
+            # 固定周期强制重训
+            if (t + 1) % K == 0 and len(s._retrain_buffer_X) >= 20:
+                from sklearn.linear_model import SGDClassifier
+                buf_X = np.array(s._retrain_buffer_X)
+                buf_y = np.array(s._retrain_buffer_y)
+                s.meta_learner = SGDClassifier(
+                    loss='log_loss', penalty='l2', alpha=0.1,
+                    learning_rate='constant', eta0=0.01,
+                    random_state=42, max_iter=2000, tol=1e-4)
+                s.meta_learner.fit(buf_X, buf_y)
+                s._drift_count += 1
+        total_time = time.time() - t0_total
+        m = compute_window_metrics(labels_list, preds)
+        r = {
+            'label': f'fixed_K{K}',
+            'f1': m['f1'], 'precision': m['precision'], 'recall': m['recall'],
+            'mean_abs_error': m['mean_abs_error'],
+            'drift_count': s._drift_count, 'time': total_time,
+        }
+        results.append(r)
+        print(f"      F1={r['f1']:.4f}  MAE={r['mean_abs_error']:.4f}  retrains={r['drift_count']}  time={r['time']:.2f}s")
+
+    # --- 漂移阈值敏感性 ---
+    print("\n  Drift threshold sensitivity:")
+    threshold_results = []
+    for th in thresholds:
+        s = make_fresh_stacking()
+        # Monkey-patch threshold
+        orig_detect = s._detect_drift.__func__ if hasattr(s._detect_drift, '__func__') else None
+        s._detect_drift = lambda min_window=30, threshold=th, _s=s: \
+            StackingEnsemble._detect_drift(_s, min_window=min_window, threshold=threshold)
+        r = eval_online(s, f'threshold_{th}')
+        threshold_results.append(r)
+        print(f"    threshold={th:.2f}: F1={r['f1']:.4f}  MAE={r['mean_abs_error']:.4f}  drift={r['drift_count']}")
+
+    # --- 学习率敏感性 ---
+    print("\n  Learning rate sensitivity:")
+    lr_results = []
+    for lr in learning_rates:
+        s = make_fresh_stacking()
+        s.meta_learner.eta0 = lr
+        s.meta_learner.learning_rate = 'constant'
+        r = eval_online(s, f'eta0_{lr}')
+        lr_results.append(r)
+        print(f"    eta0={lr:.4f}: F1={r['f1']:.4f}  MAE={r['mean_abs_error']:.4f}  drift={r['drift_count']}")
+
+    return {
+        'strategies': results,
+        'threshold_sensitivity': threshold_results,
+        'learning_rate_sensitivity': lr_results,
+    }
+
+
+# ============================================================
 # Main
 # ============================================================
 def main():
@@ -578,6 +810,16 @@ def main():
         rq2_results = run_rq2(rq2_snapshots, df_val_raw, n_test_samples=20)
         results['rq2'] = rq2_results
 
+    # ---- Run RQ3: computational efficiency ----
+    if args.rq is None or args.rq == 3:
+        rq3_results = run_rq3(X_warmup, y_warmup, X_stream, y_stream)
+        results['rq3'] = rq3_results
+
+    # ---- Run RQ4: drift detection ablation ----
+    if args.rq is None or args.rq == 4:
+        rq4_results = run_rq4(X_warmup, y_warmup, X_stream, y_stream)
+        results['rq4'] = rq4_results
+
     # ---- Save results ----
     end_time = datetime.now()
     duration = end_time - start_time
@@ -607,6 +849,14 @@ def main():
     # RQ2 summary
     if 'rq2' in results:
         output['rq2'] = results['rq2']
+
+    # RQ3 summary
+    if 'rq3' in results:
+        output['rq3'] = results['rq3']
+
+    # RQ4 summary
+    if 'rq4' in results:
+        output['rq4'] = results['rq4']
 
     summary_file = os.path.join(log_dir, 'online_experiment_results.json')
     with open(summary_file, 'w') as f:
