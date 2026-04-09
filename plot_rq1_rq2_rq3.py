@@ -1,644 +1,362 @@
 """
-绘图脚本：对 RQ1（预测精度）、RQ2（适应决策）、RQ3（计算花费）实验结果绘制对比图
-代码注释使用中文，图表文字使用英文
+plot_rq1_rq2_rq3.py
+Generate comparison plots for RQ1-3: Stacking vs BMA vs Logit.
+
+Data sources:
+  - logs/precision_recall.log     — Baseline RQ1 (Logit1-8)
+  - logs/stacking_rq1_results.tsv — Stacking RQ1
+  - logs/re_bma_logit.log         — Baseline RQ2 (BMA + Logit1-8)
+  - logs/stacking_rq2_results.tsv — Stacking RQ2
+  - logs/baseline_rq3_results.tsv — Baseline RQ3 (MCMC + BAS)
+  - logs/stacking_rq3_results.tsv — Stacking RQ3
+
+Usage:
+    python plot_rq1_rq2_rq3.py
 """
 
 import numpy as np
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')  # 使用非交互式后端
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import os
-import json
-import sys
 
-# 设置matplotlib参数
 plt.rcParams.update({
-    'font.size': 12,
-    'axes.labelsize': 14,
-    'axes.titlesize': 14,
-    'xtick.labelsize': 11,
-    'ytick.labelsize': 11,
-    'figure.figsize': (10, 5),
-    'figure.dpi': 150
+    "font.size": 12,
+    "axes.labelsize": 14,
+    "axes.titlesize": 14,
+    "xtick.labelsize": 11,
+    "ytick.labelsize": 11,
+    "figure.dpi": 150,
 })
+
+BASE_DIR = os.path.dirname(__file__)
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+PLOT_DIR = os.path.join(BASE_DIR, "plots")
+
+COLORS = {
+    "BMA": "#4C72B0",
+    "Stacking": "#DD8452",
+    "Logit": "#55A868",
+    "MCMC": "#4C72B0",
+    "BAS": "#55A868",
+}
+
+
+# ==================== Data Loading ====================
+
+def load_rq1_data():
+    """Load RQ1: Logit baseline (averaged) + Stacking + BMA.
+    Returns list of dicts: [{model, precision, recall, F1}, ...]
+    """
+    entries = []
+
+    # Stacking / BMA from stacking_rq1_results.tsv
+    stacking_file = os.path.join(LOG_DIR, "stacking_rq1_results.tsv")
+    if os.path.exists(stacking_file):
+        df = pd.read_csv(stacking_file, sep="\t")
+        for _, row in df.iterrows():
+            entries.append({
+                "model": row["model"] if row["model"] != "Stacking" else "Stacking",
+                "precision": row["precision"],
+                "recall": row["recall"],
+                "F1": row["F1"],
+            })
+            print(f"  RQ1 {row['model']}: P={row['precision']:.4f} R={row['recall']:.4f} F1={row['F1']:.4f}")
+
+    # Logit baseline (average across all models)
+    logit_file = os.path.join(LOG_DIR, "precision_recall.log")
+    if os.path.exists(logit_file):
+        df = pd.read_csv(logit_file, sep="\t")
+        # Find best Logit by mean F1
+        best_model = None
+        best_f1 = -1
+        for m in df["model"].unique():
+            mf1 = df[df["model"] == m]["F1"].mean()
+            if mf1 > best_f1:
+                best_f1 = mf1
+                best_model = m
+        if best_model:
+            sub = df[df["model"] == best_model]
+            entries.append({
+                "model": f"Best Logit ({best_model})",
+                "precision": sub["precision"].mean(),
+                "recall": sub["recall"].mean(),
+                "F1": sub["F1"].mean(),
+            })
+            print(f"  RQ1 Best Logit ({best_model}): P={sub['precision'].mean():.4f} R={sub['recall'].mean():.4f} F1={best_f1:.4f}")
+
+    return entries
 
 
 def load_rq2_data():
-    """加载 RQ2 实验数据（Stacking 和 BMA 的 RE 与成功率）"""
-    base_dir = os.path.dirname(__file__)
+    """Load RQ2: BMA + Stacking + best Logit (by success rate).
+    Returns dict: {model_name: DataFrame with RE, success columns}
+    """
+    result = {}
 
-    # 加载Stacking结果
-    stacking_file = os.path.join(base_dir, 'logs', 'stacking_rq2_results.tsv')
-    if not os.path.exists(stacking_file):
-        print(f"警告: 未找到Stacking结果文件 {stacking_file}")
-        return None, None
+    # Baseline (BMA + Logit)
+    baseline_file = os.path.join(LOG_DIR, "re_bma_logit.log")
+    if os.path.exists(baseline_file):
+        df = pd.read_csv(baseline_file, sep="\t")
 
-    stacking_df = pd.read_csv(stacking_file, sep='\t')
+        # BMA
+        bma = df[df["type"] == "BMA"]
+        if not bma.empty:
+            result["BMA"] = bma
+            print(f"  RQ2 BMA: {len(bma)} rows")
 
-    # 加载BMA结果
-    bma_file = os.path.join(base_dir, 'logs', 're_bma_logit.log')
-    if not os.path.exists(bma_file):
-        print(f"警告: 未找到BMA结果文件 {bma_file}")
-        return stacking_df, None
+        # Find best Logit by success rate
+        logit = df[df["type"] == "Logit"]
+        best_model = None
+        best_rate = -1
+        for m in logit["model"].unique():
+            sub = logit[logit["model"] == m]
+            rate = sub["success"].apply(lambda x: x == True or x == "TRUE").mean()
+            if rate > best_rate:
+                best_rate = rate
+                best_model = m
+        if best_model:
+            result[f"Best Logit ({best_model})"] = logit[logit["model"] == best_model]
+            print(f"  RQ2 Best Logit ({best_model}): success_rate={best_rate:.4f}")
 
-    bma_df = pd.read_csv(bma_file, sep='\t')
-    return stacking_df, bma_df
+    # Stacking
+    stacking_file = os.path.join(LOG_DIR, "stacking_rq2_results.tsv")
+    if os.path.exists(stacking_file):
+        df = pd.read_csv(stacking_file, sep="\t")
+        stacking = df[df["type"] == "Stacking"]
+        if not stacking.empty:
+            result["Stacking"] = stacking
+            print(f"  RQ2 Stacking: {len(stacking)} rows")
 
-
-# ==================== RQ1 数据加载 ====================
-def load_rq1_data():
-    """加载RQ1实验结果（TSV文件 + precision_recall.log 中的 Logit 数据）"""
-    base_dir = os.path.dirname(__file__)
-    rq1_file = os.path.join(base_dir, 'logs', 'stacking_rq1_results.tsv')
-    if not os.path.exists(rq1_file):
-        print(f"警告: 未找到RQ1结果文件 {rq1_file}")
-        return None
-    df = pd.read_csv(rq1_file, sep='\t')
-
-    # 从 precision_recall.log 加载 Logit 的 precision/recall/F1，取均值作为 Logit 基线
-    logit_file = os.path.join(base_dir, 'logs', 'precision_recall.log')
-    if os.path.exists(logit_file):
-        logit_df = pd.read_csv(logit_file, sep='\t')
-        logit_rows = logit_df[logit_df['type'] == 'Logit']
-        if not logit_rows.empty:
-            logit_row = pd.DataFrame([{
-                'model': 'Logit',
-                'precision': logit_rows['precision'].mean(),
-                'recall': logit_rows['recall'].mean(),
-                'f1': logit_rows['F1'].mean(),
-                'train_time': 0.0
-            }])
-            df = pd.concat([df, logit_row], ignore_index=True)
-    else:
-        print(f"警告: 未找到 Logit 精度文件 {logit_file}")
-
-    return df
+    return result
 
 
-def plot_re_comparison(stacking_df, bma_df, plot_dir, experiment_label=""):
-    """绘制RE（相对误差）对比箱线图"""
-    bma_re = bma_df[bma_df['type'] == 'BMA']['RE'].values
-    logit_re = bma_df[bma_df['type'] == 'Logit']['RE'].values
-    stacking_re = stacking_df[stacking_df['type'] == 'Stacking']['RE'].values
+def load_rq3_data():
+    """Load RQ3: MCMC/BAS baseline + Stacking.
+    Returns combined DataFrame with columns: method, vars, sample, time
+    """
+    frames = []
+
+    baseline_file = os.path.join(LOG_DIR, "baseline_rq3_results.tsv")
+    if os.path.exists(baseline_file):
+        df = pd.read_csv(baseline_file, sep=r"\s+")
+        frames.append(df)
+        print(f"  RQ3 baseline: {len(df)} rows ({df['method'].value_counts().to_dict()})")
+
+    stacking_file = os.path.join(LOG_DIR, "stacking_rq3_results.tsv")
+    if os.path.exists(stacking_file):
+        df = pd.read_csv(stacking_file, sep=r"\s+")
+        frames.append(df)
+        print(f"  RQ3 Stacking: {len(df)} rows")
+
+    return pd.concat(frames, ignore_index=True) if frames else None
+
+
+# ==================== RQ1 Plots ====================
+
+def plot_rq1(entries, plot_dir):
+    """RQ1: Three separate bar charts (one per metric)."""
+    if len(entries) < 2:
+        print("  Skipping RQ1: insufficient data")
+        return
+
+    metrics = [("precision", "Precision"), ("recall", "Recall"), ("F1", "F1 Score")]
+    model_names = [e["model"] for e in entries]
+
+    for col, label in metrics:
+        fig, ax = plt.subplots(figsize=(6, 5))
+        values = [e[col] for e in entries]
+        bar_colors = []
+        for name in model_names:
+            if "BMA" in name and "Logit" not in name:
+                bar_colors.append(COLORS["BMA"])
+            elif "Stacking" in name:
+                bar_colors.append(COLORS["Stacking"])
+            else:
+                bar_colors.append(COLORS["Logit"])
+
+        bars = ax.bar(model_names, values, color=bar_colors, alpha=0.8,
+                      edgecolor="black", linewidth=0.5)
+        for bar, val in zip(bars, values):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                    f"{val:.4f}", ha="center", va="bottom", fontsize=11, fontweight="bold")
+
+        ax.set_ylabel(label)
+        ax.set_title(f"RQ1: {label} Comparison")
+        ax.set_ylim(0, 1.1)
+        ax.grid(True, alpha=0.3, axis="y")
+        plt.tight_layout()
+        filename = os.path.join(plot_dir, f"rq1_{col}.png")
+        plt.savefig(filename, bbox_inches="tight")
+        plt.close()
+        print(f"  Saved: {filename}")
+
+
+# ==================== RQ2 Plots ====================
+
+def plot_rq2_re_boxplot(data, plot_dir):
+    """RQ2: RE box plot — BMA, Stacking, Best Logit only."""
+    order = ["BMA", "Stacking"] + [k for k in data if k.startswith("Best Logit")]
+    present = [k for k in order if k in data]
+    if not present:
+        print("  Skipping RQ2 RE plot: no data")
+        return
+
+    box_data = [data[k]["RE"].values for k in present]
+    box_colors = []
+    for k in present:
+        if "BMA" in k and "Logit" not in k:
+            box_colors.append(COLORS["BMA"])
+        elif "Stacking" in k:
+            box_colors.append(COLORS["Stacking"])
+        else:
+            box_colors.append(COLORS["Logit"])
 
     fig, ax = plt.subplots(figsize=(8, 5))
-    bp = ax.boxplot(
-        [bma_re, stacking_re, logit_re],
-        labels=['BMA', 'Stacking', 'Logit'],
-        patch_artist=True,
-        showfliers=True,
-        flierprops=dict(marker='o', markersize=3, alpha=0.5)
-    )
-    colors = ['#4C72B0', '#DD8452', '#55A868']
-    for patch, color in zip(bp['boxes'], colors):
+    bp = ax.boxplot(box_data, tick_labels=present, patch_artist=True, showfliers=True,
+                    flierprops=dict(marker="o", markersize=3, alpha=0.5))
+    for patch, color in zip(bp["boxes"], box_colors):
         patch.set_facecolor(color)
         patch.set_alpha(0.7)
 
-    ax.set_yscale('log')
-    ax.set_ylabel('RE (log scale)')
-    ax.set_title(f'Relative Error Comparison{experiment_label}')
-    ax.grid(True, alpha=0.3, axis='y')
+    ax.set_yscale("log")
+    ax.set_ylabel("Relative Error (log scale)")
+    ax.set_title("RQ2: Relative Error Comparison")
+    ax.grid(True, alpha=0.3, axis="y")
 
-    medians = [np.median(bma_re), np.median(stacking_re), np.median(logit_re)]
-    for i, median in enumerate(medians):
-        ax.text(i + 1, median * 1.3, f'median={median:.4f}', ha='center', va='bottom', fontsize=9)
+    for i, k in enumerate(present):
+        median = np.median(data[k]["RE"].values)
+        ax.text(i + 1, median * 1.5, f"{median:.4f}", ha="center", va="bottom",
+                fontsize=10, fontweight="bold")
 
     plt.tight_layout()
-    filename = os.path.join(plot_dir, f'relative_error_comparison{experiment_label.replace(" ", "_")}.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
+    filename = os.path.join(plot_dir, "rq2_relative_error.png")
+    plt.savefig(filename, bbox_inches="tight")
     plt.close()
-    print(f"RE对比图已保存: {filename}")
+    print(f"  Saved: {filename}")
 
 
-def plot_success_rate_comparison(stacking_df, bma_df, plot_dir, experiment_label=""):
-    """绘制成功率对比柱状图"""
-    bma_data = bma_df[bma_df['type'] == 'BMA']
-    bma_success = bma_data['success'].apply(lambda x: x == True or x == 'TRUE').mean()
+def plot_rq2_success_rate(data, plot_dir):
+    """RQ2: Success rate bar — BMA, Stacking, Best Logit only."""
+    order = ["BMA", "Stacking"] + [k for k in data if k.startswith("Best Logit")]
+    present = [k for k in order if k in data]
+    if not present:
+        print("  Skipping RQ2 success plot: no data")
+        return
 
-    logit_data = bma_df[bma_df['type'] == 'Logit']
-    logit_success = logit_data['success'].apply(lambda x: x == True or x == 'TRUE').mean()
-
-    stacking_data = stacking_df[stacking_df['type'] == 'Stacking']
-    stacking_success = stacking_data['success'].apply(lambda x: x == True or x == 'TRUE').mean()
+    rates = []
+    bar_colors = []
+    for k in present:
+        sub = data[k]
+        rate = sub["success"].apply(lambda x: x == True or x == "TRUE").mean()
+        rates.append(rate)
+        if "BMA" in k and "Logit" not in k:
+            bar_colors.append(COLORS["BMA"])
+        elif "Stacking" in k:
+            bar_colors.append(COLORS["Stacking"])
+        else:
+            bar_colors.append(COLORS["Logit"])
 
     fig, ax = plt.subplots(figsize=(7, 5))
-    methods = ['BMA', 'Stacking', 'Logit']
-    rates = [bma_success, stacking_success, logit_success]
-    colors = ['#4C72B0', '#DD8452', '#55A868']
-
-    bars = ax.bar(methods, rates, color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
+    bars = ax.bar(present, rates, color=bar_colors, alpha=0.8,
+                  edgecolor="black", linewidth=0.5)
     for bar, rate in zip(bars, rates):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
-                f'{rate:.4f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
+                f"{rate:.4f}", ha="center", va="bottom", fontsize=11, fontweight="bold")
 
-    ax.set_ylabel('Success Rate')
-    ax.set_title(f'Success Rate Comparison{experiment_label}')
-    ax.set_ylim(0, 1.0)
-    ax.grid(True, alpha=0.3, axis='y')
+    ax.set_ylabel("Success Rate")
+    ax.set_title("RQ2: Adaptation Success Rate Comparison")
+    ax.set_ylim(0, 1.1)
+    ax.grid(True, alpha=0.3, axis="y")
     plt.tight_layout()
-    filename = os.path.join(plot_dir, f'success_rate_comparison{experiment_label.replace(" ", "_")}.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
+    filename = os.path.join(plot_dir, "rq2_success_rate.png")
+    plt.savefig(filename, bbox_inches="tight")
     plt.close()
-    print(f"成功率对比图已保存: {filename}")
+    print(f"  Saved: {filename}")
 
 
-def plot_re_distribution(stacking_df, bma_df, plot_dir, experiment_label=""):
-    """绘制RE分布直方图"""
-    bma_re = bma_df[bma_df['type'] == 'BMA']['RE'].values
-    stacking_re = stacking_df[stacking_df['type'] == 'Stacking']['RE'].values
+# ==================== RQ3 Plots ====================
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    axes[0].hist(bma_re, bins=30, color='#4C72B0', alpha=0.7, edgecolor='black', linewidth=0.5)
-    axes[0].axvline(np.median(bma_re), color='red', linestyle='--', label=f'Median={np.median(bma_re):.4f}')
-    axes[0].set_xlabel('Relative Error')
-    axes[0].set_ylabel('Frequency')
-    axes[0].set_title('BMA RE Distribution')
-    axes[0].legend()
-    axes[0].grid(True, alpha=0.3)
+def plot_rq3_heatmap(df, plot_dir):
+    """RQ3: Training time heatmap (sample x vars) per method."""
+    TIMEOUT_THRESHOLD = 200
+    methods = df["method"].unique()
 
-    axes[1].hist(stacking_re, bins=30, color='#DD8452', alpha=0.7, edgecolor='black', linewidth=0.5)
-    axes[1].axvline(np.median(stacking_re), color='red', linestyle='--',
-                     label=f'Median={np.median(stacking_re):.4f}')
-    axes[1].set_xlabel('Relative Error')
-    axes[1].set_ylabel('Frequency')
-    axes[1].set_title(f'Stacking RE Distribution{experiment_label}')
-    axes[1].legend()
-    axes[1].grid(True, alpha=0.3)
-
-    plt.tight_layout()
-    filename = os.path.join(plot_dir, f're_distribution{experiment_label.replace(" ", "_")}.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
-    plt.close()
-    print(f"RE分布图已保存: {filename}")
-
-
-# ==================== RQ1 绘图函数 ====================
-def plot_rq1_metrics(df, plot_dir):
-    """分别绘制 precision, recall, F1 对比柱状图"""
-    metrics = ['precision', 'recall', 'f1']
-    metric_names = ['Precision', 'Recall', 'F1 Score']
-    colors = {'BMA': '#4C72B0', 'Stacking': '#DD8452', 'Logit': '#55A868'}
-
-    # 确保 DataFrame 包含 BMA、Stacking、Logit，并按顺序排列
-    df = df.set_index('model')
-    order = [m for m in ['BMA', 'Stacking', 'Logit'] if m in df.index]
-    df = df.reindex(order)
-
-    for metric, name in zip(metrics, metric_names):
-        fig, ax = plt.subplots(figsize=(6, 5))
-        values = df[metric].values
-        bars = ax.bar(order, values, color=[colors[m] for m in order],
-                      alpha=0.8, edgecolor='black', linewidth=0.5)
-        # 在柱上标注数值
-        for bar, val in zip(bars, values):
-            ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
-                    f'{val:.4f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
-        ax.set_ylabel(name)
-        ax.set_title(f'{name} Comparison')
-        ax.set_ylim(0, 1.05)
-        ax.grid(True, alpha=0.3, axis='y')
-        plt.tight_layout()
-        filename = os.path.join(plot_dir, f'{metric}_comparison.png')
-        plt.savefig(filename, dpi=150, bbox_inches='tight')
-        plt.close()
-        print(f"{name}对比图已保存: {filename}")
-
-
-# ==================== RQ3 数据加载 ====================
-def load_rq3_data():
-    """加载RQ3计算花费实验结果"""
-    base_dir = os.path.dirname(__file__)
-    rq3_file = os.path.join(base_dir, 'logs', 'stacking_rq3_results.tsv')
-    if not os.path.exists(rq3_file):
-        print(f"警告: 未找到RQ3结果文件 {rq3_file}")
-        return None
-    df = pd.read_csv(rq3_file, sep=r'\s+')
-    return df
-
-
-# ==================== RQ3 绘图函数 ====================
-def plot_cost_vs_sample(df, plot_dir):
-    """绘制训练时间随样本量变化的折线图（按变量数分面）"""
-    methods = df['method'].unique()
-    vars_list = sorted(df['vars'].unique())
-    colors = {'MCMC': '#4C72B0', 'BAS': '#55A868', 'Stacking': '#DD8452'}
-    markers = {'MCMC': 's', 'BAS': '^', 'Stacking': 'o'}
-
-    # 选取有代表性的 vars 值绘制子图
-    plot_vars = [v for v in [2, 8, 32, 64] if v in vars_list]
-    if not plot_vars:
-        plot_vars = vars_list[:4]
-
-    n_plots = len(plot_vars)
-    fig, axes = plt.subplots(1, n_plots, figsize=(5 * n_plots, 5), sharey=True)
-    if n_plots == 1:
-        axes = [axes]
-
-    for ax, v in zip(axes, plot_vars):
-        for method in methods:
-            subset = df[(df['method'] == method) & (df['vars'] == v)]
-            if subset.empty:
-                continue
-            subset = subset.sort_values('sample')
-            ax.plot(subset['sample'], subset['time'],
-                    marker=markers.get(method, 'o'),
-                    color=colors.get(method, '#999999'),
-                    label=method, linewidth=1.5, markersize=5)
-        ax.set_xlabel('Sample Size')
-        ax.set_title(f'Variables = {v}')
-        ax.set_xscale('log', base=2)
-        ax.set_yscale('log')
-        ax.grid(True, alpha=0.3)
-        ax.legend(fontsize=9)
-
-    axes[0].set_ylabel('Training Time (s)')
-    fig.suptitle('Training Cost vs Sample Size', fontsize=14, y=1.02)
-    plt.tight_layout()
-    filename = os.path.join(plot_dir, 'cost_vs_sample.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
-    plt.close()
-    print(f"训练时间-样本量对比图已保存: {filename}")
-
-
-def plot_cost_vs_vars(df, plot_dir):
-    """绘制训练时间随变量数变化的折线图（按样本量分面）"""
-    methods = df['method'].unique()
-    samples_list = sorted(df['sample'].unique())
-    colors = {'MCMC': '#4C72B0', 'BAS': '#55A868', 'Stacking': '#DD8452'}
-    markers = {'MCMC': 's', 'BAS': '^', 'Stacking': 'o'}
-
-    # 选取有代表性的 sample 值
-    plot_samples = [s for s in [200, 800, 3200, 12800] if s in samples_list]
-    if not plot_samples:
-        plot_samples = samples_list[:4]
-
-    n_plots = len(plot_samples)
-    fig, axes = plt.subplots(1, n_plots, figsize=(5 * n_plots, 5), sharey=True)
-    if n_plots == 1:
-        axes = [axes]
-
-    for ax, s in zip(axes, plot_samples):
-        for method in methods:
-            subset = df[(df['method'] == method) & (df['sample'] == s)]
-            if subset.empty:
-                continue
-            subset = subset.sort_values('vars')
-            ax.plot(subset['vars'], subset['time'],
-                    marker=markers.get(method, 'o'),
-                    color=colors.get(method, '#999999'),
-                    label=method, linewidth=1.5, markersize=5)
-        ax.set_xlabel('Number of Variables')
-        ax.set_title(f'Samples = {s}')
-        ax.set_xscale('log', base=2)
-        ax.set_yscale('log')
-        ax.grid(True, alpha=0.3)
-        ax.legend(fontsize=9)
-
-    axes[0].set_ylabel('Training Time (s)')
-    fig.suptitle('Training Cost vs Number of Variables', fontsize=14, y=1.02)
-    plt.tight_layout()
-    filename = os.path.join(plot_dir, 'cost_vs_vars.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
-    plt.close()
-    print(f"训练时间-变量数对比图已保存: {filename}")
-
-# def plot_cost_heatmap(df, plot_dir):
-#     """绘制各方法训练时间热力图（sample × vars），每个方法单独保存"""
-#     methods = df['method'].unique()
-    
-#     for method in methods:
-#         # 提取当前方法的数据
-#         subset = df[df['method'] == method]
-#         pivot = subset.pivot_table(index='sample', columns='vars', values='time', aggfunc='mean')
-#         pivot = pivot.sort_index(ascending=True)
-        
-#         # 创建新图
-#         plt.figure(figsize=(6, 5))
-#         im = plt.imshow(np.log10(pivot.values + 1e-4), aspect='auto', cmap='YlOrRd',
-#                         origin='lower')
-        
-#         # 设置坐标轴
-#         plt.xticks(range(len(pivot.columns)), pivot.columns.astype(int), fontsize=9)
-#         plt.yticks(range(len(pivot.index)), pivot.index.astype(int), fontsize=9)
-#         plt.xlabel('Variables')
-#         plt.ylabel('Samples')
-#         plt.title(f'{method}')
-        
-#         # 在格子中标注时间值
-#         for i in range(len(pivot.index)):
-#             for j in range(len(pivot.columns)):
-#                 val = pivot.values[i, j]
-#                 if not np.isnan(val):
-#                     text = f'{val:.1f}' if val < 10 else f'{val:.0f}'
-#                     plt.text(j, i, text, ha='center', va='center', fontsize=7,
-#                              color='white' if val > pivot.values[~np.isnan(pivot.values)].max() * 0.6 else 'black')
-        
-#         plt.colorbar(im, label='log10(time + 1e-4)')
-#         plt.tight_layout()
-        
-#         # 保存为单独文件
-#         filename = os.path.join(plot_dir, f'cost_heatmap_{method}.png')
-#         plt.savefig(filename, dpi=150, bbox_inches='tight')
-#         plt.close()
-#         print(f"训练时间热力图已保存: {filename}")
-def plot_cost_heatmap(df, plot_dir):
-    """绘制各方法训练时间热力图（sample × vars），每个方法单独保存。
-    时间≥200 的格子标注 'TO'，颜色统一使用最深色。
-    """
-    methods = df['method'].unique()
-    TIMEOUT_THRESHOLD = 200   # 超时阈值
-    
     for method in methods:
-        # 提取当前方法的数据
-        subset = df[df['method'] == method]
-        pivot = subset.pivot_table(index='sample', columns='vars', values='time', aggfunc='mean')
+        subset = df[df["method"] == method]
+        pivot = subset.pivot_table(index="sample", columns="vars", values="time", aggfunc="mean")
         pivot = pivot.sort_index(ascending=True)
-        
-        # 获取原始数值矩阵（用于颜色映射）
+
         data = pivot.values
-        # 为颜色映射准备裁剪后的数据（超过阈值的使用阈值，避免颜色条被拉得太长）
         display_data = np.where(data >= TIMEOUT_THRESHOLD, TIMEOUT_THRESHOLD, data)
-        
+
         plt.figure(figsize=(6, 5))
-        # 使用线性颜色映射
-        im = plt.imshow(display_data, aspect='auto', cmap='YlOrRd', origin='lower',
+        im = plt.imshow(display_data, aspect="auto", cmap="YlOrRd", origin="lower",
                         vmin=np.nanmin(display_data), vmax=TIMEOUT_THRESHOLD)
-        
-        # 坐标轴
+
         plt.xticks(range(len(pivot.columns)), pivot.columns.astype(int), fontsize=9)
         plt.yticks(range(len(pivot.index)), pivot.index.astype(int), fontsize=9)
-        plt.xlabel('Number of Variables')
-        plt.ylabel('Number of Samples')
-        plt.title(f'{method}')
-        
-        # 在格子中标注数值
+        plt.xlabel("Number of Variables")
+        plt.ylabel("Number of Samples")
+        plt.title(f"{method}")
+
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
                 val = data[i, j]
                 if np.isnan(val):
                     continue
-                # 决定标注文本
-                if val >= TIMEOUT_THRESHOLD:
-                    text = 'TO'
-                else:
-                    # 小于10保留一位小数，否则取整
-                    text = f'{val:.1f}' if val < 10 else f'{int(val)}'
-                
-                # 文本颜色：如果颜色较深则用白色，否则黑色
+                text = "TO" if val >= TIMEOUT_THRESHOLD else (f"{val:.1f}" if val < 10 else f"{int(val)}")
                 color_val = display_data[i, j] if not np.isnan(display_data[i, j]) else 0
-                is_dark = color_val > TIMEOUT_THRESHOLD * 0.6
-                plt.text(j, i, text, ha='center', va='center', fontsize=7,
-                         color='white' if is_dark else 'black')
-        
-        # 颜色条（线性，整数刻度）
-        cbar = plt.colorbar(im, label='Time (seconds)')
-        # 设置颜色条刻度为整数（如果范围较小则适当保留一位小数）
+                plt.text(j, i, text, ha="center", va="center", fontsize=7,
+                         color="white" if color_val > TIMEOUT_THRESHOLD * 0.6 else "black")
+
+        cbar = plt.colorbar(im, label="Time (seconds)")
         if np.nanmax(display_data) <= 10:
             cbar.set_ticks(np.arange(0, 11, 2))
         else:
-            cbar.set_ticks(np.arange(0, int(TIMEOUT_THRESHOLD)+1, 50))
-        
+            cbar.set_ticks(np.arange(0, int(TIMEOUT_THRESHOLD) + 1, 50))
+
         plt.tight_layout()
-        
-        # 保存
-        filename = os.path.join(plot_dir, f'cost_heatmap_{method}.png')
-        plt.savefig(filename, dpi=150, bbox_inches='tight')
+        filename = os.path.join(plot_dir, f"rq3_heatmap_{method}.png")
+        plt.savefig(filename, bbox_inches="tight")
         plt.close()
-        print(f"训练时间热力图已保存: {filename}")
-
-def plot_cost_bar_comparison_UNUSED(df, plot_dir):
-    """绘制固定配置下各方法训练时间柱状图对比"""
-    methods = df['method'].unique()
-    colors = {'MCMC': '#4C72B0', 'BAS': '#55A868', 'Stacking': '#DD8452'}
-
-    # 选取几个代表性配置
-    samples_list = sorted(df['sample'].unique())
-    vars_list = sorted(df['vars'].unique())
-    # 取中间和最大配置
-    plot_configs = []
-    for s in samples_list:
-        for v in vars_list:
-            if df[(df['sample'] == s) & (df['vars'] == v)].shape[0] == len(methods):
-                plot_configs.append((s, v))
-
-    if not plot_configs:
-        # 如果没有所有方法都有数据的配置，选择有 Stacking 数据的配置
-        for s in samples_list:
-            for v in vars_list:
-                if not df[(df['sample'] == s) & (df['vars'] == v)].empty:
-                    plot_configs.append((s, v))
-
-    # 最多选 8 个配置
-    if len(plot_configs) > 8:
-        step = len(plot_configs) // 8
-        plot_configs = plot_configs[::step][:8]
-
-    labels = [f's={s}\nv={v}' for s, v in plot_configs]
-    x = np.arange(len(plot_configs))
-    width = 0.8 / len(methods)
-
-    fig, ax = plt.subplots(figsize=(max(10, len(plot_configs) * 1.5), 6))
-    for i, method in enumerate(methods):
-        times = []
-        for s, v in plot_configs:
-            subset = df[(df['method'] == method) & (df['sample'] == s) & (df['vars'] == v)]
-            times.append(subset['time'].mean() if not subset.empty else 0)
-        ax.bar(x + i * width - 0.4 + width / 2, times, width,
-               label=method, color=colors.get(method, '#999999'), alpha=0.8,
-               edgecolor='black', linewidth=0.5)
-
-    ax.set_xlabel('Configuration')
-    ax.set_ylabel('Training Time (s)')
-    ax.set_title('Training Cost Comparison Across Configurations')
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=9)
-    ax.legend()
-    ax.set_yscale('log')
-    ax.grid(True, alpha=0.3, axis='y')
-    plt.tight_layout()
-    filename = os.path.join(plot_dir, 'cost_bar_comparison.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
-    plt.close()
-    print(f"训练时间柱状图对比已保存: {filename}")
+        print(f"  Saved: {filename}")
 
 
-# ==================== RQ4 数据加载 ====================
-def load_rq4_data():
-    """加载RQ4在线学习对比实验结果"""
-    base_dir = os.path.dirname(__file__)
-    rq4_file = os.path.join(base_dir, 'logs', 'online_comparison_results.tsv')
-    if not os.path.exists(rq4_file):
-        print(f"警告: 未找到RQ4结果文件 {rq4_file}")
-        return None
-    df = pd.read_csv(rq4_file, sep='\t')
-    return df
+# ==================== Main ====================
 
-
-# ==================== RQ4 绘图函数 ====================
-def plot_rq4_re_boxplot(df, plot_dir):
-    """RQ4: 三种方法的RE箱线图对比"""
-    methods = df['method'].unique()
-    colors_map = {
-        'Static Stacking': '#4C72B0',
-        'Online Stacking (SGD+Drift)': '#DD8452',
-        'EWA Baseline': '#55A868'
-    }
-
-    data = [df[df['method'] == m]['RE'].values for m in methods]
-    fig, ax = plt.subplots(figsize=(8, 5))
-    bp = ax.boxplot(
-        data, labels=[m.replace(' (SGD+Drift)', '\n(SGD+Drift)') for m in methods],
-        patch_artist=True, showfliers=True,
-        flierprops=dict(marker='o', markersize=3, alpha=0.5)
-    )
-    for patch, m in zip(bp['boxes'], methods):
-        patch.set_facecolor(colors_map.get(m, '#999999'))
-        patch.set_alpha(0.7)
-
-    ax.set_yscale('log')
-    ax.set_ylabel('Relative Error (log scale)')
-    ax.set_title('RQ4: Online Learning — Relative Error Comparison')
-    ax.grid(True, alpha=0.3, axis='y')
-
-    for i, m in enumerate(methods):
-        median = np.median(df[df['method'] == m]['RE'].values)
-        ax.text(i + 1, median * 1.3, f'median={median:.4f}', ha='center', va='bottom', fontsize=9)
-
-    # 添加BMA基线参考线
-    ax.axhline(y=0.0242, color='red', linestyle='--', alpha=0.6, label='BMA baseline (0.0242)')
-    ax.legend(fontsize=9)
-
-    plt.tight_layout()
-    filename = os.path.join(plot_dir, 'rq4_re_comparison.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
-    plt.close()
-    print(f"RQ4 RE对比图已保存: {filename}")
-
-
-def plot_rq4_success_bar(df, plot_dir):
-    """RQ4: 三种方法的成功率柱状图"""
-    methods = df['method'].unique()
-    colors_map = {
-        'Static Stacking': '#4C72B0',
-        'Online Stacking (SGD+Drift)': '#DD8452',
-        'EWA Baseline': '#55A868'
-    }
-
-    rates = []
-    for m in methods:
-        subset = df[df['method'] == m]
-        rates.append(subset['success'].apply(lambda x: x == True or x == 'TRUE').mean())
-
-    fig, ax = plt.subplots(figsize=(7, 5))
-    labels = [m.replace(' (SGD+Drift)', '\n(SGD+Drift)') for m in methods]
-    bars = ax.bar(labels, rates,
-                  color=[colors_map.get(m, '#999999') for m in methods],
-                  alpha=0.8, edgecolor='black', linewidth=0.5)
-    for bar, rate in zip(bars, rates):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
-                f'{rate:.4f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
-
-    # BMA基线
-    ax.axhline(y=0.7582, color='red', linestyle='--', alpha=0.6, label='BMA baseline (0.7582)')
-    ax.set_ylabel('Success Rate')
-    ax.set_title('RQ4: Online Learning — Success Rate Comparison')
-    ax.set_ylim(0, 1.0)
-    ax.grid(True, alpha=0.3, axis='y')
-    ax.legend(fontsize=9)
-    plt.tight_layout()
-    filename = os.path.join(plot_dir, 'rq4_success_rate.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
-    plt.close()
-    print(f"RQ4 成功率对比图已保存: {filename}")
-
-
-def plot_rq4_rolling_re(df, plot_dir):
-    """RQ4: 滑动平均RE随样本数变化的趋势图（展示在线学习效果）"""
-    methods = df['method'].unique()
-    colors_map = {
-        'Static Stacking': '#4C72B0',
-        'Online Stacking (SGD+Drift)': '#DD8452',
-        'EWA Baseline': '#55A868'
-    }
-    window = 30  # 滑动窗口大小
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    for m in methods:
-        subset = df[df['method'] == m].reset_index(drop=True)
-        re_vals = subset['RE'].values
-        # 计算滑动平均
-        rolling = pd.Series(re_vals).rolling(window=window, min_periods=5).median()
-        ax.plot(range(len(rolling)), rolling,
-                color=colors_map.get(m, '#999999'),
-                label=m, linewidth=1.5, alpha=0.85)
-
-    ax.axhline(y=0.0242, color='red', linestyle='--', alpha=0.5, label='BMA baseline')
-    ax.set_xlabel('Sample Index (online stream)')
-    ax.set_ylabel(f'Rolling Median RE (window={window})')
-    ax.set_title('RQ4: Online Learning — RE Trend Over Time')
-    ax.legend(fontsize=9)
-    ax.grid(True, alpha=0.3)
-    plt.tight_layout()
-    filename = os.path.join(plot_dir, 'rq4_rolling_re.png')
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
-    plt.close()
-    print(f"RQ4 RE趋势图已保存: {filename}")
-
-
-# ==================== 主函数 ====================
 def main():
-    base_dir = os.path.dirname(__file__)
-    plot_dir = os.path.join(base_dir, 'plots')
-    os.makedirs(plot_dir, exist_ok=True)
+    os.makedirs(PLOT_DIR, exist_ok=True)
+    print("=== Generating Plots ===\n")
 
-    # 检查是否指定了实验标签（用于 RQ2 图表文件名）
-    experiment_label = ""
-    if len(sys.argv) > 1:
-        experiment_label = f" ({sys.argv[1]})"
-
-    print(f"\n=== 开始绘图{experiment_label} ===")
-
-    # # ----------------- RQ2 绘图 -----------------
-    # stacking_df, bma_df = load_rq2_data()
-    # if stacking_df is not None and bma_df is not None:
-    #     print("正在绘制 RQ2 结果...")
-    #     plot_re_comparison(stacking_df, bma_df, plot_dir, experiment_label)
-    #     plot_success_rate_comparison(stacking_df, bma_df, plot_dir, experiment_label)
-    #     plot_re_distribution(stacking_df, bma_df, plot_dir, experiment_label)
-    # else:
-    #     print("RQ2 数据加载失败，跳过相关绘图。")
-
-    # # ----------------- RQ1 绘图 -----------------
-    # rq1_data = load_rq1_data()
-    # if rq1_data is not None:
-    #     print("正在绘制 RQ1 结果...")
-    #     plot_rq1_metrics(rq1_data, plot_dir)
-    # else:
-    #     print("RQ1 数据加载失败，跳过相关绘图。")
-
-    # ----------------- RQ3 绘图 -----------------
-    rq3_data = load_rq3_data()
-    if rq3_data is not None:
-        print("正在绘制 RQ3 结果...")
-        # plot_cost_vs_sample(rq3_data, plot_dir)
-        # plot_cost_vs_vars(rq3_data, plot_dir)
-        plot_cost_heatmap(rq3_data, plot_dir)
+    # ---- RQ1 ----
+    print("RQ1: Prediction Accuracy")
+    rq1_entries = load_rq1_data()
+    if rq1_entries:
+        plot_rq1(rq1_entries, PLOT_DIR)
     else:
-        print("RQ3 数据加载失败，跳过相关绘图。")
+        print("  No RQ1 data available, skipping.")
 
-    # ----------------- RQ4 绘图 -----------------
-    rq4_data = load_rq4_data()
-    if rq4_data is not None:
-        print("正在绘制 RQ4 结果...")
-        plot_rq4_re_boxplot(rq4_data, plot_dir)
-        plot_rq4_success_bar(rq4_data, plot_dir)
-        plot_rq4_rolling_re(rq4_data, plot_dir)
+    # ---- RQ2 ----
+    print("\nRQ2: Adaptation Decisions")
+    rq2_data = load_rq2_data()
+    if rq2_data:
+        plot_rq2_re_boxplot(rq2_data, PLOT_DIR)
+        plot_rq2_success_rate(rq2_data, PLOT_DIR)
     else:
-        print("RQ4 数据加载失败，跳过相关绘图。（请先运行 experiment_online.py）")
+        print("  No RQ2 data available, skipping.")
 
-    print(f"\n所有图表已保存到: {plot_dir}")
+    # ---- RQ3 ----
+    print("\nRQ3: Computational Cost")
+    rq3_df = load_rq3_data()
+    if rq3_df is not None:
+        plot_rq3_heatmap(rq3_df, PLOT_DIR)
+    else:
+        print("  No RQ3 data available, skipping.")
+
+    print(f"\nAll plots saved to: {PLOT_DIR}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
