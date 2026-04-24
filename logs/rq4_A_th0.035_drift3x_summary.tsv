@@ -1,0 +1,5 @@
+method	precision	recall	F1	brier
+Stacking-Online	0.548387	0.425	0.478873	0.239619
+Stacking-Offline	0.538462	0.35	0.424242	0.259731
+BMA	0.540146	0.37	0.439169	0.261817
+Best-Logit	0.548148	0.37	0.441791	0.26305

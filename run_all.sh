@@ -20,6 +20,7 @@ SKIP_RQ3=false
 RQ2_EXTRA=""
 RQ3_EXTRA=""
 THRESHOLDS="0.05 0.10 0.15 0.20 0.25"
+DRIFT_SCENARIOS="1x 2x 3x 4x 5x 6x"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -50,6 +51,20 @@ for TH in $THRESHOLDS; do
     echo "[RQ2] threshold=$TH (ga-workers=$GA_WORKERS) ..."
     python run_rq2.py --drift-threshold "$TH" --ga-workers "$GA_WORKERS" $RQ2_EXTRA \
         > "logs/run_rq2_${TAG}.log" 2>&1
+done
+
+# RQ4: Concept Drift experiments
+echo ""
+echo "============================================"
+echo "  RQ4: Concept Drift Experiments"
+echo "============================================"
+for TH in $THRESHOLDS; do
+    TAG=$(awk -v t="$TH" 'BEGIN{printf "th%.3f", t}')
+    for SC in $DRIFT_SCENARIOS; do
+        echo "[RQ4] threshold=$TH scenario=$SC ..."
+        python run_rq4.py --drift-threshold "$TH" --drift-scenario "$SC" > "logs/run_rq4_${TAG}_drift${SC}.log" 2>&1
+        echo "  Done (see logs/run_rq4_${TAG}_drift${SC}.log)"
+    done
 done
 
 if [ "$SKIP_RQ3" = false ]; then

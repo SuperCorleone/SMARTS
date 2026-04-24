@@ -44,6 +44,7 @@ PARTITION=""
 ACCOUNT=""
 EXTRA_RQ2=""
 THRESHOLDS="0.05 0.10 0.15 0.20 0.25"
+DRIFT_SCENARIOS="1x 2x 3x 4x 5x 6x"
 
 # ---------------------------------------------------------------------------
 # Parse arguments
@@ -57,6 +58,7 @@ while [[ $# -gt 0 ]]; do
         --time)       TIME_GA="$2"; shift 2 ;;
         --partition)  PARTITION="-p $2"; shift 2 ;;
         --account)    ACCOUNT="-A $2"; shift 2 ;;
+        --drift-scenarios) DRIFT_SCENARIOS="$2"; shift 2 ;;
         --quick)      EXTRA_RQ2="--limit 20"; RQ3_CHUNKS=3; shift ;;
         *)            echo "Unknown: $1"; exit 1 ;;
     esac
@@ -147,6 +149,20 @@ for TH in $THRESHOLDS; do
 done
 
 # ---------------------------------------------------------------------------
+# RQ4: Concept Drift (independent, per threshold × scenario)
+# ---------------------------------------------------------------------------
+RQ4_JOBS=""
+for TH in $THRESHOLDS; do
+    TAG=$(th_tag "$TH")
+    for SC in $DRIFT_SCENARIOS; do
+        RQ4=$(sbatch --parsable $COMMON --time=$TIME_RQ1 -J rq4_A_${TAG}_drift${SC} \
+            --wrap="$PREAMBLE; python run_rq4.py --drift-threshold $TH --drift-scenario $SC")
+        RQ4_JOBS="$RQ4_JOBS $RQ4"
+        echo "  RQ4: threshold=$TH scenario=$SC  jobid=$RQ4"
+    done
+done
+
+# ---------------------------------------------------------------------------
 # RQ3 (independent, chunked)
 # ---------------------------------------------------------------------------
 RQ3_LAST=$((RQ3_CHUNKS - 1))
@@ -160,17 +176,19 @@ echo "RQ3:         $RQ3 [0..$RQ3_LAST]"
 # ---------------------------------------------------------------------------
 PLOT_DEPS="${ALL_MERGE_JOBS#:}:$RQ3"
 for J in $RQ1_JOBS; do PLOT_DEPS="$PLOT_DEPS:$J"; done
+for J in $RQ4_JOBS; do PLOT_DEPS="$PLOT_DEPS:$J"; done
 
 PLOT=$(sbatch --parsable $COMMON --time=$TIME_MERGE -J plot \
     --dependency=afterok:$PLOT_DEPS \
     --wrap="$PREAMBLE; python run_rq3.py --merge; python plot_results.py")
-echo "Plot:        $PLOT (depends on all merges + RQ3 + RQ1)"
+echo "Plot:        $PLOT (depends on all merges + RQ3 + RQ1 + RQ4)"
 
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 N_TH=$(echo $THRESHOLDS | wc -w | tr -d ' ')
-TOTAL_JOBS=$((1 + GA_CHUNKS*2 + N_TH*(1+1+GA_CHUNKS+1) + RQ3_CHUNKS + 1))
+N_SC=$(echo $DRIFT_SCENARIOS | wc -w | tr -d ' ')
+TOTAL_JOBS=$((1 + GA_CHUNKS*2 + N_TH*(1+1+GA_CHUNKS+1) + N_TH*N_SC + RQ3_CHUNKS + 1))
 echo ""
 echo "============================================"
 echo "  Total jobs submitted: $TOTAL_JOBS"
@@ -185,6 +203,7 @@ echo "      RQ2 Online:   1 job"
 echo "      RQ2 OnlineGA: $GA_CHUNKS jobs"
 echo "      Merge:        1 job"
 echo "    RQ3:            $RQ3_CHUNKS jobs"
+echo "    RQ4:            $((N_TH * N_SC)) jobs  ($N_TH thresholds × $N_SC scenarios)"
 echo "    Plot:           1 job"
 echo ""
 echo "  Monitor: squeue -u \$USER"

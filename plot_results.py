@@ -61,6 +61,7 @@ TIMEOUT = 200
 
 _RE_RQ1 = re.compile(r"^rq1_A_th(\d+\.\d+)\.json$")
 _RE_RQ2 = re.compile(r"^rq2_A_th(\d+\.\d+)\.json$")
+_RE_RQ4 = re.compile(r"^rq4_A_th(\d+\.\d+)_drift(\w+)\.json$")
 
 
 def _color(name):
@@ -415,6 +416,237 @@ def plot_rq3_heatmap(df):
         print(f"  Saved: {path}")
 
 
+# ==================== RQ4 ====================
+
+def discover_rq4():
+    """Return sorted list of (threshold_float, scenario_str, filename)."""
+    out = []
+    if not os.path.isdir(LOG_DIR):
+        return out
+    for fname in sorted(os.listdir(LOG_DIR)):
+        m = _RE_RQ4.match(fname)
+        if m:
+            out.append((float(m.group(1)), m.group(2), fname))
+    return sorted(out, key=lambda x: (x[0], x[1]))
+
+
+def _sliding_window_pr(samples, window=50):
+    """Compute sliding-window precision, recall, and F1 from per_sample data."""
+    preds_bin = [1 if s['pred'] >= 0.5 else 0 for s in samples]
+    trues = [s['true'] for s in samples]
+    ts = [s['t'] for s in samples]
+    precisions, recalls, f1s = [], [], []
+    for i in range(len(samples)):
+        start = max(0, i - window + 1)
+        p = preds_bin[start:i+1]
+        y = trues[start:i+1]
+        tp = sum(a == 1 and b == 1 for a, b in zip(p, y))
+        fp = sum(a == 1 and b == 0 for a, b in zip(p, y))
+        fn = sum(a == 0 and b == 1 for a, b in zip(p, y))
+        prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
+        precisions.append(prec)
+        recalls.append(rec)
+        f1s.append(f1)
+    return ts, precisions, recalls, f1s
+
+
+def _plot_rq4_metric_over_time(data, th, scenario, metric_name, metric_idx):
+    """Generic per-metric over-time plot for RQ4.
+    metric_idx: 0=precision, 1=recall, 2=f1"""
+    methods = [m for m in METHOD_ORDER if m in data['methods']]
+    fig, ax = plt.subplots(figsize=(10, 5))
+    label_map = {0: 'Precision', 1: 'Recall', 2: 'F1'}
+    for m in methods:
+        samples = data['methods'][m]['per_sample']
+        ts, precs, recs, f1s = _sliding_window_pr(samples)
+        values = [precs, recs, f1s][metric_idx]
+        ax.plot(ts, values, label=m, color=_color(m), alpha=0.85, linewidth=1.5)
+
+    drift_intervals = data.get('drift_intervals', [])
+    for start, end in drift_intervals:
+        ax.axvline(x=start, color='red', linestyle='--', alpha=0.7)
+        ax.axvline(x=end, color='green', linestyle='--', alpha=0.7)
+        ax.axvspan(start, end, alpha=0.15, color='red')
+
+    ax.set_xlabel("Stream sample index")
+    ax.set_ylabel(f"{label_map[metric_idx]} (sliding window=50)")
+    ax.set_title(f"RQ4 (th={th:.3f}, drift={scenario}): {label_map[metric_idx]} Over Stream")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    path = os.path.join(PLOT_DIR,
+                        f"rq4_A_th{th:.3f}_drift{scenario}_{metric_name}_over_time.png")
+    plt.savefig(path, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved: {path}")
+
+
+def plot_rq4_recovery_bars(data, th, scenario):
+    # segment_metrics format: {method: {interval_key: {segment: float}}}
+    segment_metrics = data.get('segment_metrics', {})
+    if not segment_metrics:
+        return
+
+    methods = [m for m in METHOD_ORDER if m in segment_metrics]
+    if not methods:
+        return
+    segments = ['pre_drift', 'during_drift', 'post_drift']
+    seg_labels = ['Pre-Drift', 'During Drift', 'Post-Drift']
+
+    interval_keys = sorted(segment_metrics[methods[0]].keys())
+    n_intervals = len(interval_keys)
+    n_methods = len(methods)
+
+    fig, axes = plt.subplots(1, max(n_intervals, 1), figsize=(7 * n_intervals, 6),
+                             squeeze=False)
+    for idx, interval_key in enumerate(interval_keys):
+        ax = axes[0][idx]
+        x = np.arange(len(segments))
+        width = 0.8 / max(n_methods, 1)
+
+        for j, m in enumerate(methods):
+            vals = []
+            for seg in segments:
+                v = segment_metrics[m].get(interval_key, {}).get(seg)
+                vals.append(v if v is not None else 0.0)
+            bars = ax.bar(x + j * width, vals, width, label=m, color=_color(m), alpha=0.85)
+            for bar, val in zip(bars, vals):
+                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                        f"{val:.3f}", ha='center', va='bottom', fontsize=8)
+
+        ax.set_xticks(x + width * (n_methods - 1) / 2)
+        ax.set_xticklabels(seg_labels, rotation=15, ha='right')
+        ax.set_ylim(0, 1.15)
+        ax.set_ylabel("F1")
+        ax.set_title(interval_key.replace('_', ' ').title())
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.3, axis='y')
+
+    fig.suptitle(f"RQ4 (th={th:.3f}, drift={scenario}): Recovery Analysis", fontsize=14)
+    plt.tight_layout()
+    path = os.path.join(PLOT_DIR, f"rq4_A_th{th:.3f}_drift{scenario}_recovery.png")
+    plt.savefig(path, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved: {path}")
+
+
+def plot_rq4_comparison(rq4_runs):
+    """Per-width cross-scenario comparison (one plot per metric per threshold)."""
+    if not rq4_runs:
+        return
+    thresholds = sorted(set(th for th, _, _ in rq4_runs))
+    counts = ['1x', '2x', '3x', '4x', '5x', '6x']
+    # widths present in the data (suffix after count, '' means w50/original)
+    width_styles = {
+        '':    ('w=50', '-',  'o'),
+        '_w10': ('w=10', '--', 's'),
+        '_w30': ('w=30', ':',  '^'),
+    }
+    metric_info = [('f1', 'F1'), ('precision', 'Precision'), ('recall', 'Recall')]
+
+    for metric_key, metric_label in metric_info:
+        for th in thresholds:
+            th_runs = [(sc, fn) for t, sc, fn in rq4_runs if t == th]
+            sc_map = {sc: _load_json(os.path.join(LOG_DIR, fn)) for sc, fn in th_runs}
+
+            # Two focus methods: Online vs Offline — clearest story
+            focus = ['Stacking-Online', 'Stacking-Offline']
+            method_colors = {'Stacking-Online': '#E24A33', 'Stacking-Offline': '#348ABD'}
+
+            fig, ax = plt.subplots(figsize=(10, 5))
+            x_ticks = list(range(1, 7))
+
+            for suffix, (wlabel, ls, marker) in width_styles.items():
+                for m in focus:
+                    vals = []
+                    for cnt in counts:
+                        key = cnt + suffix
+                        if key in sc_map and m in sc_map[key]['methods']:
+                            vals.append(sc_map[key]['methods'][m][metric_key])
+                        else:
+                            vals.append(np.nan)
+                    if all(np.isnan(v) for v in vals):
+                        continue
+                    ax.plot(x_ticks, vals, linestyle=ls, marker=marker,
+                            color=method_colors[m], linewidth=1.5, alpha=0.85,
+                            label=f"{m} ({wlabel})")
+
+            ax.set_xticks(x_ticks)
+            ax.set_xticklabels([f"{c}" for c in counts])
+            ax.set_xlabel("Number of drift injections")
+            ax.set_ylabel(metric_label)
+            ax.set_title(f"RQ4 (th={th:.3f}): {metric_label} — Online vs Offline across drift counts & widths")
+            ax.legend(fontsize=8, ncol=2)
+            ax.grid(True, alpha=0.3)
+            ax.set_ylim(0, 1.05)
+            plt.tight_layout()
+            path = os.path.join(PLOT_DIR, f"rq4_cross_scenario_{metric_key}_th{th:.3f}.png")
+            plt.savefig(path, bbox_inches="tight")
+            plt.close()
+            print(f"  Saved: {path}")
+
+
+def plot_rq4_width_gap(rq4_runs):
+    """Show Online−Offline F1 gap as a function of drift count, one line per width."""
+    if not rq4_runs:
+        return
+    thresholds = sorted(set(th for th, _, _ in rq4_runs))
+    counts = ['1x', '2x', '3x', '4x', '5x', '6x']
+    width_info = [('', 'w=50 (strong)', '-'), ('_w30', 'w=30 (medium)', '--'), ('_w10', 'w=10 (mild)', ':')]
+
+    for th in thresholds:
+        th_runs = [(sc, fn) for t, sc, fn in rq4_runs if t == th]
+        sc_map = {sc: _load_json(os.path.join(LOG_DIR, fn)) for sc, fn in th_runs}
+
+        fig, ax = plt.subplots(figsize=(9, 5))
+        x_ticks = list(range(1, 7))
+        for suffix, wlabel, ls in width_info:
+            gaps = []
+            for cnt in counts:
+                key = cnt + suffix
+                if key not in sc_map:
+                    gaps.append(np.nan)
+                    continue
+                m_on = sc_map[key]['methods'].get('Stacking-Online', {}).get('f1', np.nan)
+                m_off = sc_map[key]['methods'].get('Stacking-Offline', {}).get('f1', np.nan)
+                gaps.append(m_on - m_off if not np.isnan(m_on) and not np.isnan(m_off) else np.nan)
+            if all(np.isnan(g) for g in gaps):
+                continue
+            ax.plot(x_ticks, gaps, linestyle=ls, marker='o', linewidth=2, label=wlabel)
+
+        ax.axhline(0, color='black', linewidth=0.8, linestyle='-')
+        ax.set_xticks(x_ticks)
+        ax.set_xticklabels(counts)
+        ax.set_xlabel("Number of drift injections")
+        ax.set_ylabel("F1 gap (Online − Offline)")
+        ax.set_title(f"RQ4 (th={th:.3f}): Online advantage grows with drift frequency & intensity")
+        ax.legend(fontsize=9)
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        path = os.path.join(PLOT_DIR, f"rq4_online_offline_gap_th{th:.3f}.png")
+        plt.savefig(path, bbox_inches="tight")
+        plt.close()
+        print(f"  Saved: {path}")
+
+
+def run_rq4():
+    print("\nRQ4: Concept Drift")
+    runs = discover_rq4()
+    if not runs:
+        print("  No RQ4 data found in logs/")
+        return
+    for th, scenario, fn in runs:
+        data = _load_json(os.path.join(LOG_DIR, fn))
+        _plot_rq4_metric_over_time(data, th, scenario, 'f1', 2)
+        _plot_rq4_metric_over_time(data, th, scenario, 'precision', 0)
+        _plot_rq4_metric_over_time(data, th, scenario, 'recall', 1)
+        plot_rq4_recovery_bars(data, th, scenario)
+    plot_rq4_comparison(runs)
+    plot_rq4_width_gap(runs)
+
+
 # ==================== Main ====================
 
 def main():
@@ -422,9 +654,10 @@ def main():
     parser.add_argument('--rq1-only', action='store_true')
     parser.add_argument('--rq2-only', action='store_true')
     parser.add_argument('--rq3-only', action='store_true')
+    parser.add_argument('--rq4-only', action='store_true')
     args = parser.parse_args()
 
-    do_all = not (args.rq1_only or args.rq2_only or args.rq3_only)
+    do_all = not (args.rq1_only or args.rq2_only or args.rq3_only or args.rq4_only)
     os.makedirs(PLOT_DIR, exist_ok=True)
     print("=== Generating Plots ===\n")
 
@@ -460,6 +693,9 @@ def main():
             plot_rq3_heatmap(df)
         else:
             print("  No RQ3 data")
+
+    if do_all or args.rq4_only:
+        run_rq4()
 
     print(f"\nAll plots in: {PLOT_DIR}")
 
