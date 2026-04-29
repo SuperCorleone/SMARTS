@@ -19,8 +19,8 @@ GA_WORKERS=2
 SKIP_RQ3=false
 RQ2_EXTRA=""
 RQ3_EXTRA=""
-THRESHOLDS="0.05 0.10 0.15 0.20 0.25"
-DRIFT_SCENARIOS="1x 2x 3x 4x 5x 6x"
+THRESHOLDS="0.035"
+DRIFT_SCENARIOS="6x"
 
 while [[ $# -gt 0 ]]; do
     case $1 in

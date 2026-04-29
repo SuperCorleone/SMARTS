@@ -1,0 +1,4 @@
+method	precision	mean_RE	median_RE	n_samples
+Stacking-Online	1.0	478991.975292	5400.694023	237
+BMA	1.0	0.952054	0.620968	237
+Best-Logit	1.0	0.684724	0.61516	237

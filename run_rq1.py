@@ -20,8 +20,12 @@ import warnings
 
 import numpy as np
 import pandas as pd
+from itertools import combinations
 from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from statsmodels.tools import add_constant
+import statsmodels.api as sm
 
 from stacking import StackingEnsemble
 from bma import BMA
@@ -65,51 +69,89 @@ def sliding_window_f1(y_true, y_pred, window=50, threshold=0.5):
     return float(f1_score(true, labels, zero_division=0))
 
 
-def find_best_logit(stacking_model, X_warmup_with_const, y_warmup):
+def find_best_logit_ms(X, y, random_state=42):
     """
-    Find the single best logistic regression base model by F1 on warmup data.
-    Returns (index_set, model) tuple.
+    Model Selection (MS) baseline aligned with TAAS2024 (helpers.py).
+
+    1. Stratified 80/20 split with StandardScaler normalization
+    2. Occam's window enumeration on scaled training data
+    3. Select the single best model by F1 on the held-out set
+    4. Refit the best model on ALL scaled data for streaming prediction
+
+    Returns (idx_set, model, scaler) or None on failure.
     """
+    y_arr = np.asarray(y, dtype=int)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y_arr, test_size=0.2, stratify=y_arr, random_state=random_state)
+
+    scaler = StandardScaler()
+    X_train_s = pd.DataFrame(scaler.fit_transform(X_train), columns=X.columns)
+    X_test_s = pd.DataFrame(scaler.transform(X_test), columns=X.columns)
+    y_train_s = pd.DataFrame(y_train)
+    y_test_s = pd.DataFrame(y_test)
+
+    nCols = X_train_s.shape[1]
+    maxVars = nCols
     best_f1 = -1.0
-    best_entry = None
-    y_arr = np.array(y_warmup, dtype=int)
+    best_idx_set = None
 
-    for idx_set, model in stacking_model.base_models:
-        if model is None:
-            continue
-        try:
-            preds = model.predict(X_warmup_with_const.iloc[:, list(idx_set)])
-            labels = (np.array(preds) >= 0.5).astype(int)
-            score = f1_score(y_arr, labels, zero_division=0)
-            if score > best_f1:
-                best_f1 = score
-                best_entry = (idx_set, model)
-        except Exception:
-            continue
+    models_previous = []
+    for num_elements in range(1, maxVars + 1):
+        models_next = list(combinations(list(range(nCols)), num_elements))
+        if num_elements == 1:
+            models_current = models_next
+            models_previous = []
+        else:
+            idx_keep = np.zeros(len(models_next))
+            for m_new, idx in zip(models_next, range(len(models_next))):
+                for m_good in models_previous:
+                    if all(x in m_new for x in m_good):
+                        idx_keep[idx] = 1
+                        break
+            models_current = np.asarray(models_next)[np.where(idx_keep == 1)].tolist()
+            models_previous = []
 
-    if best_entry is None:
-        # Fallback: use first valid model
-        for idx_set, model in stacking_model.base_models:
-            if model is not None:
-                best_entry = (idx_set, model)
-                break
-    return best_entry
+        for model_index_set in models_current:
+            model_X = X_train_s.iloc[:, list(model_index_set)]
+            test_X = X_test_s.iloc[:, list(model_index_set)]
+            try:
+                local_model = sm.Logit(y_train_s, model_X).fit(disp=0)
+                models_previous.append(model_index_set)
+                y_pred = np.round(local_model.predict(test_X)).astype(int)
+                score = f1_score(y_test_s, y_pred, zero_division=0)
+                if score > best_f1:
+                    best_f1 = score
+                    best_idx_set = model_index_set
+            except Exception:
+                continue
+
+    if best_idx_set is None:
+        return None
+
+    # Refit best model on ALL scaled warmup data
+    scaler_full = StandardScaler()
+    X_all_s = pd.DataFrame(scaler_full.fit_transform(X), columns=X.columns)
+    y_all = pd.DataFrame(y_arr)
+    best_model = sm.Logit(y_all, X_all_s.iloc[:, list(best_idx_set)]).fit(disp=0)
+
+    return best_idx_set, best_model, scaler_full
 
 
-def predict_logit(model_entry, row_with_const):
-    """Predict probability with a single logistic regression model."""
-    idx_set, model = model_entry
+def predict_logit_ms(ms_entry, row_raw):
+    """Predict probability with the MS best-logit model (TAAS2024 design)."""
+    idx_set, model, scaler = ms_entry
     try:
-        pred = model.predict(row_with_const.iloc[:, list(idx_set)])
+        row_scaled = pd.DataFrame(scaler.transform(row_raw), columns=row_raw.columns)
+        pred = model.predict(row_scaled.iloc[:, list(idx_set)])
         return float(pred.values[0] if hasattr(pred, 'values') else pred[0])
     except Exception:
         return 0.5
 
 
-def predict_bma(bma_model, row_with_const):
-    """Predict probability with BMA, handling scalar/array returns."""
+def predict_bma(bma_model, row_raw):
+    """Predict probability with BMA. BMA normalizes internally via scaler."""
     try:
-        result = bma_model.predict(np.asarray(row_with_const))
+        result = bma_model.predict(row_raw)
         if hasattr(result, '__len__'):
             return float(np.ravel(result)[0])
         return float(result)
@@ -126,17 +168,25 @@ def main():
     parser.add_argument('--setting', choices=['A'], default='A',
                         help='Only Setting A is supported; flag kept for compatibility.')
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
-    parser.add_argument('--mini-batch', type=int, default=5,
-                        help='Mini-batch size for StackingEnsemble')
+    parser.add_argument('--mini-batch', type=int, default=1,
+                        help='Mini-batch size for StackingEnsemble (Pareto-optimal default)')
     parser.add_argument('--drift-threshold', type=float, default=0.15,
-                        help='ADWIN drift threshold for online warm restart.')
-    parser.add_argument('--online-lr', type=float, default=0.001,
-                        help='Online learning rate')
+                        help='Windowed mean-shift drift threshold for warm restart.')
+    parser.add_argument('--online-lr', type=float, default=0.05,
+                        help='SGD eta0 (online learning rate; Pareto-optimal default)')
+    parser.add_argument('--alpha', type=float, default=0.001,
+                        help='SGD L2 regularization strength')
+    parser.add_argument('--retrain-every', type=int, default=1,
+                        help='BMA re-fit interval (1 = TAAS2024 paper-strict eq.5)')
+    parser.add_argument('--tag-suffix', type=str, default='',
+                        help='Optional suffix appended to log filenames for ablation runs')
     args = parser.parse_args()
 
     np.random.seed(args.seed)
     t_start = time.time()
     tag = f"th{float(args.drift_threshold):.3f}"
+    if args.tag_suffix:
+        tag = f"{tag}_{args.tag_suffix}"
 
     # ------------------------------------------------------------------
     # 1. Load data
@@ -152,10 +202,10 @@ def main():
     y_valid_all = df_valid[TARGET_COL].values
 
     # ------------------------------------------------------------------
-    # 2. Setting A: warmup = 450 training, stream = 462 validation
+    # 2. Setting A: warmup = full training set, stream = full validation set (both 462 rows)
     # ------------------------------------------------------------------
-    X_warmup = X_train_all.iloc[:450].reset_index(drop=True)
-    y_warmup = y_train_all[:450]
+    X_warmup = X_train_all.reset_index(drop=True)
+    y_warmup = y_train_all
     X_stream = X_valid_all.reset_index(drop=True)
     y_stream = y_valid_all
 
@@ -164,7 +214,8 @@ def main():
     print(f"=== RQ1 Setting A [{tag}] ===")
     print(f"Warmup: {warmup_size} samples, Stream: {stream_size} samples")
     print(f"Config: mini_batch={args.mini_batch}, drift_threshold={args.drift_threshold}, "
-          f"lr={args.online_lr}, seed={args.seed}")
+          f"lr={args.online_lr}, alpha={args.alpha}, "
+          f"retrain_every={args.retrain_every}, seed={args.seed}")
 
     # ------------------------------------------------------------------
     # 3. Train Stacking on warmup
@@ -175,6 +226,7 @@ def main():
         random_state=args.seed,
         online_lr=args.online_lr,
         mini_batch_size=args.mini_batch,
+        alpha=args.alpha,
         drift_threshold=args.drift_threshold,
     )
     stacking_online.fit(X_warmup, y_warmup)
@@ -183,21 +235,22 @@ def main():
     stacking_offline = copy.deepcopy(stacking_online)
 
     # ------------------------------------------------------------------
-    # 4. Train BMA on warmup
+    # 4. Train BMA on warmup (TAAS2024: no add_constant, scaler inside)
     # ------------------------------------------------------------------
     print("\n--- Training BMA ---")
-    X_warmup_const = add_constant(X_warmup)
-    bma_model = BMA(y_warmup, X_warmup_const, RegType='Logit', Verbose=False).fit()
+    bma_model = BMA(y_warmup, X_warmup, RegType='Logit', Verbose=False,
+                    retrain_every=args.retrain_every).fit()
     print(f"  BMA fitted with {len(bma_model.likelihoods_all)} models")
 
     # ------------------------------------------------------------------
-    # 5. Find best individual logistic regression
+    # 5. Model Selection baseline (TAAS2024: StandardScaler + held-out F1)
     # ------------------------------------------------------------------
-    print("\n--- Selecting Best-Logit ---")
-    best_logit_entry = find_best_logit(stacking_online, add_constant(X_warmup), y_warmup)
-    if best_logit_entry is not None:
-        bl_idx_set, _ = best_logit_entry
-        print(f"  Best-Logit uses features: {bl_idx_set}")
+    print("\n--- Selecting Best-Logit (MS) ---")
+    ms_result = find_best_logit_ms(X_warmup, y_warmup, random_state=args.seed)
+    if ms_result is not None:
+        bl_idx_set, _, _ = ms_result
+        bl_feature_names = [FEATURE_COLS[i] for i in bl_idx_set]
+        print(f"  Best-Logit uses features: {bl_idx_set} {bl_feature_names}")
     else:
         print("  WARNING: No valid logistic model found; Best-Logit will return 0.5")
 
@@ -220,9 +273,9 @@ def main():
         # ---- Predict BEFORE update ----
         pred_online = stacking_online.predict_single(x_t_with_const)
         pred_offline = stacking_offline.predict_single(x_t_with_const)
-        pred_bma_val = predict_bma(bma_model, x_t_with_const)
-        pred_logit_val = (predict_logit(best_logit_entry, x_t_with_const)
-                          if best_logit_entry is not None else 0.5)
+        pred_bma_val = predict_bma(bma_model, x_t_raw)
+        pred_logit_val = (predict_logit_ms(ms_result, x_t_raw)
+                          if ms_result is not None else 0.5)
 
         # ---- Record ----
         trues.append(int(y_t))
@@ -244,8 +297,9 @@ def main():
                 'brier_cum': round(br, 6),
             })
 
-        # ---- Knowledge update: only online model ----
+        # ---- Knowledge update: online models ----
         stacking_online.online_update(x_t_raw, y_t)
+        bma_model.online_update(x_t_raw, y_t)
 
         # Progress
         if (t + 1) % 50 == 0 or t == stream_size - 1:
