@@ -1,0 +1,4934 @@
+{
+  "setting": "A",
+  "drift_threshold": 0.035,
+  "drift_scenario": "3x",
+  "warmup_size": 450,
+  "stream_size": 450,
+  "hazard0_count": 233,
+  "oracle": "logit",
+  "oracle_label_source": "match-drift",
+  "metric_key": "RE",
+  "methods": {
+    "Stacking-Online": {
+      "precision": 0.690987,
+      "mean_RE": 0.870005,
+      "median_RE": 0.937365,
+      "n_samples": 233,
+      "per_sample": [
+        {
+          "t": 0,
+          "pred": 0.00558,
+          "oracle": 0.418805,
+          "success": true,
+          "RE": 0.986676
+        },
+        {
+          "t": 1,
+          "pred": 0.014176,
+          "oracle": 0.348493,
+          "success": true,
+          "RE": 0.959322
+        },
+        {
+          "t": 3,
+          "pred": 0.007425,
+          "oracle": 0.356487,
+          "success": true,
+          "RE": 0.979173
+        },
+        {
+          "t": 4,
+          "pred": 0.005791,
+          "oracle": 0.440418,
+          "success": true,
+          "RE": 0.986852
+        },
+        {
+          "t": 5,
+          "pred": 0.006615,
+          "oracle": 0.576301,
+          "success": false,
+          "RE": 0.988521
+        },
+        {
+          "t": 6,
+          "pred": 0.018172,
+          "oracle": 0.276211,
+          "success": true,
+          "RE": 0.934208
+        },
+        {
+          "t": 7,
+          "pred": 0.00566,
+          "oracle": 0.448936,
+          "success": true,
+          "RE": 0.987392
+        },
+        {
+          "t": 9,
+          "pred": 0.004707,
+          "oracle": 0.339141,
+          "success": true,
+          "RE": 0.986122
+        },
+        {
+          "t": 10,
+          "pred": 0.065593,
+          "oracle": 0.282684,
+          "success": true,
+          "RE": 0.767964
+        },
+        {
+          "t": 13,
+          "pred": 0.007941,
+          "oracle": 0.395607,
+          "success": true,
+          "RE": 0.979926
+        },
+        {
+          "t": 14,
+          "pred": 0.004873,
+          "oracle": 0.427378,
+          "success": true,
+          "RE": 0.988598
+        },
+        {
+          "t": 17,
+          "pred": 0.048302,
+          "oracle": 0.315693,
+          "success": true,
+          "RE": 0.846998
+        },
+        {
+          "t": 19,
+          "pred": 0.00518,
+          "oracle": 0.390503,
+          "success": true,
+          "RE": 0.986736
+        },
+        {
+          "t": 22,
+          "pred": 0.020662,
+          "oracle": 0.329887,
+          "success": true,
+          "RE": 0.937365
+        },
+        {
+          "t": 24,
+          "pred": 0.058513,
+          "oracle": 0.358579,
+          "success": true,
+          "RE": 0.83682
+        },
+        {
+          "t": 27,
+          "pred": 0.005284,
+          "oracle": 0.417727,
+          "success": true,
+          "RE": 0.987352
+        },
+        {
+          "t": 28,
+          "pred": 0.011505,
+          "oracle": 0.316316,
+          "success": true,
+          "RE": 0.963629
+        },
+        {
+          "t": 30,
+          "pred": 0.001781,
+          "oracle": 0.402782,
+          "success": true,
+          "RE": 0.995578
+        },
+        {
+          "t": 33,
+          "pred": 0.049194,
+          "oracle": 0.471531,
+          "success": true,
+          "RE": 0.895672
+        },
+        {
+          "t": 34,
+          "pred": 0.041839,
+          "oracle": 0.438566,
+          "success": true,
+          "RE": 0.9046
+        },
+        {
+          "t": 36,
+          "pred": 0.004897,
+          "oracle": 0.495527,
+          "success": true,
+          "RE": 0.990118
+        },
+        {
+          "t": 37,
+          "pred": 0.004425,
+          "oracle": 0.50749,
+          "success": false,
+          "RE": 0.99128
+        },
+        {
+          "t": 40,
+          "pred": 0.01384,
+          "oracle": 0.395006,
+          "success": true,
+          "RE": 0.964962
+        },
+        {
+          "t": 42,
+          "pred": 0.002902,
+          "oracle": 0.419122,
+          "success": true,
+          "RE": 0.993077
+        },
+        {
+          "t": 46,
+          "pred": 0.047536,
+          "oracle": 0.355826,
+          "success": true,
+          "RE": 0.866405
+        },
+        {
+          "t": 49,
+          "pred": 0.029389,
+          "oracle": 0.415291,
+          "success": true,
+          "RE": 0.929232
+        },
+        {
+          "t": 51,
+          "pred": 0.004369,
+          "oracle": 0.438398,
+          "success": true,
+          "RE": 0.990035
+        },
+        {
+          "t": 52,
+          "pred": 0.004581,
+          "oracle": 0.462815,
+          "success": true,
+          "RE": 0.990101
+        },
+        {
+          "t": 55,
+          "pred": 0.045914,
+          "oracle": 0.365026,
+          "success": true,
+          "RE": 0.874217
+        },
+        {
+          "t": 56,
+          "pred": 0.037807,
+          "oracle": 0.451358,
+          "success": true,
+          "RE": 0.916237
+        },
+        {
+          "t": 58,
+          "pred": 0.007656,
+          "oracle": 0.562887,
+          "success": false,
+          "RE": 0.986398
+        },
+        {
+          "t": 61,
+          "pred": 0.004248,
+          "oracle": 0.334232,
+          "success": true,
+          "RE": 0.987289
+        },
+        {
+          "t": 63,
+          "pred": 0.000672,
+          "oracle": 0.303943,
+          "success": true,
+          "RE": 0.997788
+        },
+        {
+          "t": 65,
+          "pred": 0.003613,
+          "oracle": 0.449604,
+          "success": true,
+          "RE": 0.991965
+        },
+        {
+          "t": 66,
+          "pred": 0.000228,
+          "oracle": 0.446351,
+          "success": true,
+          "RE": 0.99949
+        },
+        {
+          "t": 68,
+          "pred": 0.039995,
+          "oracle": 0.378434,
+          "success": true,
+          "RE": 0.894315
+        },
+        {
+          "t": 70,
+          "pred": 0.062241,
+          "oracle": 0.373454,
+          "success": true,
+          "RE": 0.833337
+        },
+        {
+          "t": 71,
+          "pred": 0.03807,
+          "oracle": 0.426877,
+          "success": true,
+          "RE": 0.910818
+        },
+        {
+          "t": 74,
+          "pred": 0.006901,
+          "oracle": 0.391223,
+          "success": true,
+          "RE": 0.98236
+        },
+        {
+          "t": 75,
+          "pred": 0.005157,
+          "oracle": 0.343152,
+          "success": true,
+          "RE": 0.984971
+        },
+        {
+          "t": 78,
+          "pred": 0.026859,
+          "oracle": 0.439915,
+          "success": true,
+          "RE": 0.938944
+        },
+        {
+          "t": 79,
+          "pred": 0.037325,
+          "oracle": 0.362157,
+          "success": true,
+          "RE": 0.896937
+        },
+        {
+          "t": 80,
+          "pred": 0.003761,
+          "oracle": 0.404673,
+          "success": true,
+          "RE": 0.990705
+        },
+        {
+          "t": 82,
+          "pred": 0.003775,
+          "oracle": 0.498305,
+          "success": true,
+          "RE": 0.992424
+        },
+        {
+          "t": 84,
+          "pred": 0.002824,
+          "oracle": 0.325701,
+          "success": true,
+          "RE": 0.991328
+        },
+        {
+          "t": 89,
+          "pred": 0.040281,
+          "oracle": 0.39882,
+          "success": true,
+          "RE": 0.898999
+        },
+        {
+          "t": 90,
+          "pred": 0.031782,
+          "oracle": 0.368727,
+          "success": true,
+          "RE": 0.913806
+        },
+        {
+          "t": 92,
+          "pred": 0.000416,
+          "oracle": 0.247811,
+          "success": true,
+          "RE": 0.998323
+        },
+        {
+          "t": 94,
+          "pred": 1.3e-05,
+          "oracle": 0.404522,
+          "success": true,
+          "RE": 0.999967
+        },
+        {
+          "t": 96,
+          "pred": 0.487072,
+          "oracle": 0.591317,
+          "success": false,
+          "RE": 0.176293
+        },
+        {
+          "t": 97,
+          "pred": 0.227819,
+          "oracle": 0.511002,
+          "success": false,
+          "RE": 0.554173
+        },
+        {
+          "t": 99,
+          "pred": 0.010086,
+          "oracle": 0.636192,
+          "success": false,
+          "RE": 0.984146
+        },
+        {
+          "t": 101,
+          "pred": 0.10946,
+          "oracle": 0.720907,
+          "success": false,
+          "RE": 0.848164
+        },
+        {
+          "t": 102,
+          "pred": 0.098453,
+          "oracle": 0.507012,
+          "success": false,
+          "RE": 0.805817
+        },
+        {
+          "t": 103,
+          "pred": 0.08695,
+          "oracle": 0.657605,
+          "success": false,
+          "RE": 0.867777
+        },
+        {
+          "t": 104,
+          "pred": 0.112226,
+          "oracle": 0.620106,
+          "success": false,
+          "RE": 0.819021
+        },
+        {
+          "t": 105,
+          "pred": 0.089125,
+          "oracle": 0.618312,
+          "success": false,
+          "RE": 0.855858
+        },
+        {
+          "t": 107,
+          "pred": 0.006278,
+          "oracle": 0.520186,
+          "success": false,
+          "RE": 0.987931
+        },
+        {
+          "t": 109,
+          "pred": 0.066084,
+          "oracle": 0.61349,
+          "success": false,
+          "RE": 0.892282
+        },
+        {
+          "t": 110,
+          "pred": 0.009327,
+          "oracle": 0.606464,
+          "success": false,
+          "RE": 0.984621
+        },
+        {
+          "t": 116,
+          "pred": 0.00616,
+          "oracle": 0.52068,
+          "success": false,
+          "RE": 0.988169
+        },
+        {
+          "t": 117,
+          "pred": 0.071048,
+          "oracle": 0.510966,
+          "success": false,
+          "RE": 0.860954
+        },
+        {
+          "t": 118,
+          "pred": 0.004832,
+          "oracle": 0.633812,
+          "success": false,
+          "RE": 0.992376
+        },
+        {
+          "t": 121,
+          "pred": 0.00304,
+          "oracle": 0.642508,
+          "success": false,
+          "RE": 0.995268
+        },
+        {
+          "t": 122,
+          "pred": 0.011903,
+          "oracle": 0.505732,
+          "success": false,
+          "RE": 0.976465
+        },
+        {
+          "t": 129,
+          "pred": 0.05594,
+          "oracle": 0.618296,
+          "success": false,
+          "RE": 0.909526
+        },
+        {
+          "t": 134,
+          "pred": 0.163897,
+          "oracle": 0.596513,
+          "success": false,
+          "RE": 0.725241
+        },
+        {
+          "t": 136,
+          "pred": 0.039182,
+          "oracle": 0.713695,
+          "success": false,
+          "RE": 0.9451
+        },
+        {
+          "t": 138,
+          "pred": 0.091697,
+          "oracle": 0.631395,
+          "success": false,
+          "RE": 0.85477
+        },
+        {
+          "t": 140,
+          "pred": 0.003843,
+          "oracle": 0.63333,
+          "success": false,
+          "RE": 0.993931
+        },
+        {
+          "t": 141,
+          "pred": 0.007504,
+          "oracle": 0.588647,
+          "success": false,
+          "RE": 0.987252
+        },
+        {
+          "t": 145,
+          "pred": 0.624168,
+          "oracle": 0.371237,
+          "success": false,
+          "RE": 0.681322
+        },
+        {
+          "t": 147,
+          "pred": 0.488846,
+          "oracle": 0.252097,
+          "success": true,
+          "RE": 0.939115
+        },
+        {
+          "t": 148,
+          "pred": 0.194511,
+          "oracle": 0.372853,
+          "success": true,
+          "RE": 0.478317
+        },
+        {
+          "t": 149,
+          "pred": 0.223149,
+          "oracle": 0.389434,
+          "success": true,
+          "RE": 0.42699
+        },
+        {
+          "t": 150,
+          "pred": 0.412014,
+          "oracle": 0.280424,
+          "success": true,
+          "RE": 0.469254
+        },
+        {
+          "t": 151,
+          "pred": 0.489269,
+          "oracle": 0.516855,
+          "success": false,
+          "RE": 0.053373
+        },
+        {
+          "t": 152,
+          "pred": 0.256269,
+          "oracle": 0.41506,
+          "success": true,
+          "RE": 0.382573
+        },
+        {
+          "t": 153,
+          "pred": 0.186208,
+          "oracle": 0.458997,
+          "success": true,
+          "RE": 0.594316
+        },
+        {
+          "t": 154,
+          "pred": 0.012919,
+          "oracle": 0.373571,
+          "success": true,
+          "RE": 0.965418
+        },
+        {
+          "t": 158,
+          "pred": 0.023968,
+          "oracle": 0.329486,
+          "success": true,
+          "RE": 0.927257
+        },
+        {
+          "t": 161,
+          "pred": 0.048475,
+          "oracle": 0.419906,
+          "success": true,
+          "RE": 0.884558
+        },
+        {
+          "t": 163,
+          "pred": 0.00504,
+          "oracle": 0.434175,
+          "success": true,
+          "RE": 0.988391
+        },
+        {
+          "t": 164,
+          "pred": 0.090505,
+          "oracle": 0.27658,
+          "success": true,
+          "RE": 0.672771
+        },
+        {
+          "t": 166,
+          "pred": 0.147093,
+          "oracle": 0.491733,
+          "success": true,
+          "RE": 0.700869
+        },
+        {
+          "t": 167,
+          "pred": 0.133052,
+          "oracle": 0.264517,
+          "success": true,
+          "RE": 0.497001
+        },
+        {
+          "t": 170,
+          "pred": 0.158105,
+          "oracle": 0.340591,
+          "success": true,
+          "RE": 0.535791
+        },
+        {
+          "t": 172,
+          "pred": 0.100353,
+          "oracle": 0.494365,
+          "success": true,
+          "RE": 0.797007
+        },
+        {
+          "t": 173,
+          "pred": 0.009668,
+          "oracle": 0.448568,
+          "success": true,
+          "RE": 0.978446
+        },
+        {
+          "t": 174,
+          "pred": 0.010604,
+          "oracle": 0.358098,
+          "success": true,
+          "RE": 0.970388
+        },
+        {
+          "t": 175,
+          "pred": 0.137136,
+          "oracle": 0.455389,
+          "success": true,
+          "RE": 0.698859
+        },
+        {
+          "t": 176,
+          "pred": 0.009144,
+          "oracle": 0.514377,
+          "success": false,
+          "RE": 0.982223
+        },
+        {
+          "t": 178,
+          "pred": 0.074474,
+          "oracle": 0.371961,
+          "success": true,
+          "RE": 0.79978
+        },
+        {
+          "t": 182,
+          "pred": 0.043753,
+          "oracle": 0.4588,
+          "success": true,
+          "RE": 0.904635
+        },
+        {
+          "t": 189,
+          "pred": 0.107384,
+          "oracle": 0.312039,
+          "success": true,
+          "RE": 0.655865
+        },
+        {
+          "t": 190,
+          "pred": 0.119185,
+          "oracle": 0.297645,
+          "success": true,
+          "RE": 0.599574
+        },
+        {
+          "t": 191,
+          "pred": 0.053097,
+          "oracle": 0.449076,
+          "success": true,
+          "RE": 0.881765
+        },
+        {
+          "t": 192,
+          "pred": 0.118802,
+          "oracle": 0.368011,
+          "success": true,
+          "RE": 0.677178
+        },
+        {
+          "t": 194,
+          "pred": 0.10466,
+          "oracle": 0.41275,
+          "success": true,
+          "RE": 0.746433
+        },
+        {
+          "t": 196,
+          "pred": 0.01086,
+          "oracle": 0.410532,
+          "success": true,
+          "RE": 0.973546
+        },
+        {
+          "t": 199,
+          "pred": 0.053281,
+          "oracle": 0.349431,
+          "success": true,
+          "RE": 0.847521
+        },
+        {
+          "t": 202,
+          "pred": 0.086809,
+          "oracle": 0.363179,
+          "success": true,
+          "RE": 0.760975
+        },
+        {
+          "t": 203,
+          "pred": 0.073156,
+          "oracle": 0.369597,
+          "success": true,
+          "RE": 0.802065
+        },
+        {
+          "t": 204,
+          "pred": 0.009288,
+          "oracle": 0.396394,
+          "success": true,
+          "RE": 0.976569
+        },
+        {
+          "t": 205,
+          "pred": 0.012092,
+          "oracle": 0.272199,
+          "success": true,
+          "RE": 0.955577
+        },
+        {
+          "t": 206,
+          "pred": 0.007288,
+          "oracle": 0.367567,
+          "success": true,
+          "RE": 0.980172
+        },
+        {
+          "t": 207,
+          "pred": 0.002551,
+          "oracle": 0.276169,
+          "success": true,
+          "RE": 0.990765
+        },
+        {
+          "t": 208,
+          "pred": 0.090339,
+          "oracle": 0.357574,
+          "success": true,
+          "RE": 0.747357
+        },
+        {
+          "t": 209,
+          "pred": 0.182696,
+          "oracle": 0.455204,
+          "success": true,
+          "RE": 0.598649
+        },
+        {
+          "t": 211,
+          "pred": 0.096487,
+          "oracle": 0.291764,
+          "success": true,
+          "RE": 0.669298
+        },
+        {
+          "t": 215,
+          "pred": 0.090898,
+          "oracle": 0.357786,
+          "success": true,
+          "RE": 0.745942
+        },
+        {
+          "t": 217,
+          "pred": 0.097748,
+          "oracle": 0.422653,
+          "success": true,
+          "RE": 0.768728
+        },
+        {
+          "t": 218,
+          "pred": 0.057132,
+          "oracle": 0.367749,
+          "success": true,
+          "RE": 0.844643
+        },
+        {
+          "t": 223,
+          "pred": 0.033127,
+          "oracle": 0.411257,
+          "success": true,
+          "RE": 0.919449
+        },
+        {
+          "t": 225,
+          "pred": 0.010036,
+          "oracle": 0.356387,
+          "success": true,
+          "RE": 0.97184
+        },
+        {
+          "t": 226,
+          "pred": 0.052423,
+          "oracle": 0.367626,
+          "success": true,
+          "RE": 0.8574
+        },
+        {
+          "t": 227,
+          "pred": 0.004057,
+          "oracle": 0.34351,
+          "success": true,
+          "RE": 0.98819
+        },
+        {
+          "t": 233,
+          "pred": 0.01967,
+          "oracle": 0.751224,
+          "success": false,
+          "RE": 0.973815
+        },
+        {
+          "t": 234,
+          "pred": 0.008387,
+          "oracle": 0.662834,
+          "success": false,
+          "RE": 0.987346
+        },
+        {
+          "t": 235,
+          "pred": 0.131334,
+          "oracle": 0.529027,
+          "success": false,
+          "RE": 0.751745
+        },
+        {
+          "t": 237,
+          "pred": 0.005905,
+          "oracle": 0.685341,
+          "success": false,
+          "RE": 0.991384
+        },
+        {
+          "t": 239,
+          "pred": 0.008728,
+          "oracle": 0.643683,
+          "success": false,
+          "RE": 0.98644
+        },
+        {
+          "t": 240,
+          "pred": 0.008854,
+          "oracle": 0.446325,
+          "success": true,
+          "RE": 0.980162
+        },
+        {
+          "t": 242,
+          "pred": 0.097687,
+          "oracle": 0.619887,
+          "success": false,
+          "RE": 0.842411
+        },
+        {
+          "t": 243,
+          "pred": 0.01396,
+          "oracle": 0.686021,
+          "success": false,
+          "RE": 0.979651
+        },
+        {
+          "t": 247,
+          "pred": 0.00545,
+          "oracle": 0.650783,
+          "success": false,
+          "RE": 0.991626
+        },
+        {
+          "t": 248,
+          "pred": 0.078975,
+          "oracle": 0.679788,
+          "success": false,
+          "RE": 0.883824
+        },
+        {
+          "t": 249,
+          "pred": 0.008025,
+          "oracle": 0.529885,
+          "success": false,
+          "RE": 0.984856
+        },
+        {
+          "t": 250,
+          "pred": 0.004722,
+          "oracle": 0.509367,
+          "success": false,
+          "RE": 0.99073
+        },
+        {
+          "t": 251,
+          "pred": 0.005905,
+          "oracle": 0.450574,
+          "success": true,
+          "RE": 0.986894
+        },
+        {
+          "t": 254,
+          "pred": 0.161763,
+          "oracle": 0.406942,
+          "success": true,
+          "RE": 0.60249
+        },
+        {
+          "t": 256,
+          "pred": 0.060596,
+          "oracle": 0.425349,
+          "success": true,
+          "RE": 0.857538
+        },
+        {
+          "t": 259,
+          "pred": 0.012632,
+          "oracle": 0.34897,
+          "success": true,
+          "RE": 0.963801
+        },
+        {
+          "t": 260,
+          "pred": 0.007348,
+          "oracle": 0.664524,
+          "success": false,
+          "RE": 0.988943
+        },
+        {
+          "t": 263,
+          "pred": 0.011013,
+          "oracle": 0.574178,
+          "success": false,
+          "RE": 0.98082
+        },
+        {
+          "t": 264,
+          "pred": 0.003955,
+          "oracle": 0.518494,
+          "success": false,
+          "RE": 0.992372
+        },
+        {
+          "t": 268,
+          "pred": 0.011907,
+          "oracle": 0.735525,
+          "success": false,
+          "RE": 0.983811
+        },
+        {
+          "t": 272,
+          "pred": 0.012046,
+          "oracle": 0.547271,
+          "success": false,
+          "RE": 0.97799
+        },
+        {
+          "t": 275,
+          "pred": 0.057915,
+          "oracle": 0.623253,
+          "success": false,
+          "RE": 0.907076
+        },
+        {
+          "t": 276,
+          "pred": 0.010858,
+          "oracle": 0.501209,
+          "success": false,
+          "RE": 0.978336
+        },
+        {
+          "t": 279,
+          "pred": 0.008166,
+          "oracle": 0.715758,
+          "success": false,
+          "RE": 0.988591
+        },
+        {
+          "t": 282,
+          "pred": 0.056395,
+          "oracle": 0.7488,
+          "success": false,
+          "RE": 0.924687
+        },
+        {
+          "t": 283,
+          "pred": 0.00801,
+          "oracle": 0.360973,
+          "success": true,
+          "RE": 0.977809
+        },
+        {
+          "t": 285,
+          "pred": 0.06052,
+          "oracle": 0.460675,
+          "success": true,
+          "RE": 0.868628
+        },
+        {
+          "t": 286,
+          "pred": 0.006421,
+          "oracle": 0.371395,
+          "success": true,
+          "RE": 0.982712
+        },
+        {
+          "t": 288,
+          "pred": 0.055333,
+          "oracle": 0.316994,
+          "success": true,
+          "RE": 0.825445
+        },
+        {
+          "t": 290,
+          "pred": 0.395015,
+          "oracle": 0.454354,
+          "success": true,
+          "RE": 0.130602
+        },
+        {
+          "t": 291,
+          "pred": 0.053893,
+          "oracle": 0.34959,
+          "success": true,
+          "RE": 0.84584
+        },
+        {
+          "t": 295,
+          "pred": 0.099142,
+          "oracle": 0.410848,
+          "success": true,
+          "RE": 0.75869
+        },
+        {
+          "t": 296,
+          "pred": 0.0086,
+          "oracle": 0.463165,
+          "success": true,
+          "RE": 0.981432
+        },
+        {
+          "t": 297,
+          "pred": 0.004467,
+          "oracle": 0.331675,
+          "success": true,
+          "RE": 0.986531
+        },
+        {
+          "t": 299,
+          "pred": 0.007783,
+          "oracle": 0.377941,
+          "success": true,
+          "RE": 0.979408
+        },
+        {
+          "t": 301,
+          "pred": 0.093734,
+          "oracle": 0.495451,
+          "success": true,
+          "RE": 0.810812
+        },
+        {
+          "t": 302,
+          "pred": 0.005596,
+          "oracle": 0.342755,
+          "success": true,
+          "RE": 0.983675
+        },
+        {
+          "t": 303,
+          "pred": 0.074578,
+          "oracle": 0.459695,
+          "success": true,
+          "RE": 0.837767
+        },
+        {
+          "t": 304,
+          "pred": 0.005994,
+          "oracle": 0.418688,
+          "success": true,
+          "RE": 0.985683
+        },
+        {
+          "t": 305,
+          "pred": 0.005949,
+          "oracle": 0.35892,
+          "success": true,
+          "RE": 0.983425
+        },
+        {
+          "t": 307,
+          "pred": 0.023245,
+          "oracle": 0.37843,
+          "success": true,
+          "RE": 0.938574
+        },
+        {
+          "t": 311,
+          "pred": 0.00493,
+          "oracle": 0.418822,
+          "success": true,
+          "RE": 0.98823
+        },
+        {
+          "t": 312,
+          "pred": 0.011136,
+          "oracle": 0.356955,
+          "success": true,
+          "RE": 0.968802
+        },
+        {
+          "t": 314,
+          "pred": 0.103152,
+          "oracle": 0.414725,
+          "success": true,
+          "RE": 0.751277
+        },
+        {
+          "t": 315,
+          "pred": 0.109892,
+          "oracle": 0.404865,
+          "success": true,
+          "RE": 0.72857
+        },
+        {
+          "t": 316,
+          "pred": 0.006566,
+          "oracle": 0.286089,
+          "success": true,
+          "RE": 0.977049
+        },
+        {
+          "t": 319,
+          "pred": 0.100987,
+          "oracle": 0.470624,
+          "success": true,
+          "RE": 0.78542
+        },
+        {
+          "t": 320,
+          "pred": 0.109663,
+          "oracle": 0.44155,
+          "success": true,
+          "RE": 0.751641
+        },
+        {
+          "t": 321,
+          "pred": 0.012245,
+          "oracle": 0.303575,
+          "success": true,
+          "RE": 0.959665
+        },
+        {
+          "t": 322,
+          "pred": 0.018185,
+          "oracle": 0.351296,
+          "success": true,
+          "RE": 0.948233
+        },
+        {
+          "t": 323,
+          "pred": 0.347933,
+          "oracle": 0.418371,
+          "success": true,
+          "RE": 0.168364
+        },
+        {
+          "t": 324,
+          "pred": 0.008629,
+          "oracle": 0.427305,
+          "success": true,
+          "RE": 0.979806
+        },
+        {
+          "t": 327,
+          "pred": 0.098782,
+          "oracle": 0.438837,
+          "success": true,
+          "RE": 0.7749
+        },
+        {
+          "t": 331,
+          "pred": 0.030987,
+          "oracle": 0.30626,
+          "success": true,
+          "RE": 0.89882
+        },
+        {
+          "t": 333,
+          "pred": 0.012982,
+          "oracle": 0.412872,
+          "success": true,
+          "RE": 0.968557
+        },
+        {
+          "t": 339,
+          "pred": 0.172042,
+          "oracle": 0.405768,
+          "success": true,
+          "RE": 0.57601
+        },
+        {
+          "t": 340,
+          "pred": 0.140694,
+          "oracle": 0.391986,
+          "success": true,
+          "RE": 0.641075
+        },
+        {
+          "t": 341,
+          "pred": 0.012749,
+          "oracle": 0.32301,
+          "success": true,
+          "RE": 0.96053
+        },
+        {
+          "t": 342,
+          "pred": 0.152474,
+          "oracle": 0.407607,
+          "success": true,
+          "RE": 0.625928
+        },
+        {
+          "t": 344,
+          "pred": 0.132834,
+          "oracle": 0.346754,
+          "success": true,
+          "RE": 0.616922
+        },
+        {
+          "t": 345,
+          "pred": 0.067894,
+          "oracle": 0.448538,
+          "success": true,
+          "RE": 0.848632
+        },
+        {
+          "t": 346,
+          "pred": 0.012269,
+          "oracle": 0.362378,
+          "success": true,
+          "RE": 0.966143
+        },
+        {
+          "t": 348,
+          "pred": 0.00853,
+          "oracle": 0.373798,
+          "success": true,
+          "RE": 0.97718
+        },
+        {
+          "t": 349,
+          "pred": 0.093407,
+          "oracle": 0.442179,
+          "success": true,
+          "RE": 0.788757
+        },
+        {
+          "t": 350,
+          "pred": 0.025131,
+          "oracle": 0.442473,
+          "success": true,
+          "RE": 0.943204
+        },
+        {
+          "t": 352,
+          "pred": 0.083898,
+          "oracle": 0.342384,
+          "success": true,
+          "RE": 0.754958
+        },
+        {
+          "t": 354,
+          "pred": 0.120436,
+          "oracle": 0.281956,
+          "success": true,
+          "RE": 0.572853
+        },
+        {
+          "t": 355,
+          "pred": 0.032887,
+          "oracle": 0.296749,
+          "success": true,
+          "RE": 0.889178
+        },
+        {
+          "t": 356,
+          "pred": 0.101911,
+          "oracle": 0.422407,
+          "success": true,
+          "RE": 0.758737
+        },
+        {
+          "t": 359,
+          "pred": 0.033523,
+          "oracle": 0.441797,
+          "success": true,
+          "RE": 0.92412
+        },
+        {
+          "t": 360,
+          "pred": 0.244769,
+          "oracle": 0.425452,
+          "success": true,
+          "RE": 0.424685
+        },
+        {
+          "t": 361,
+          "pred": 0.008331,
+          "oracle": 0.313678,
+          "success": true,
+          "RE": 0.973442
+        },
+        {
+          "t": 362,
+          "pred": 0.014377,
+          "oracle": 0.39734,
+          "success": true,
+          "RE": 0.963817
+        },
+        {
+          "t": 365,
+          "pred": 0.067616,
+          "oracle": 0.467069,
+          "success": true,
+          "RE": 0.855233
+        },
+        {
+          "t": 368,
+          "pred": 0.006693,
+          "oracle": 0.450313,
+          "success": true,
+          "RE": 0.985137
+        },
+        {
+          "t": 369,
+          "pred": 0.057663,
+          "oracle": 0.480806,
+          "success": true,
+          "RE": 0.880069
+        },
+        {
+          "t": 370,
+          "pred": 0.009234,
+          "oracle": 0.369022,
+          "success": true,
+          "RE": 0.974978
+        },
+        {
+          "t": 371,
+          "pred": 0.015839,
+          "oracle": 0.439807,
+          "success": true,
+          "RE": 0.963987
+        },
+        {
+          "t": 374,
+          "pred": 0.160533,
+          "oracle": 0.626202,
+          "success": false,
+          "RE": 0.743641
+        },
+        {
+          "t": 376,
+          "pred": 0.076157,
+          "oracle": 0.741141,
+          "success": false,
+          "RE": 0.897243
+        },
+        {
+          "t": 378,
+          "pred": 0.058342,
+          "oracle": 0.710792,
+          "success": false,
+          "RE": 0.917919
+        },
+        {
+          "t": 379,
+          "pred": 0.024526,
+          "oracle": 0.704055,
+          "success": false,
+          "RE": 0.965165
+        },
+        {
+          "t": 380,
+          "pred": 0.094615,
+          "oracle": 0.75866,
+          "success": false,
+          "RE": 0.875286
+        },
+        {
+          "t": 382,
+          "pred": 0.097971,
+          "oracle": 0.602689,
+          "success": false,
+          "RE": 0.837444
+        },
+        {
+          "t": 385,
+          "pred": 0.008687,
+          "oracle": 0.521301,
+          "success": false,
+          "RE": 0.983336
+        },
+        {
+          "t": 389,
+          "pred": 0.020065,
+          "oracle": 0.582667,
+          "success": false,
+          "RE": 0.965563
+        },
+        {
+          "t": 391,
+          "pred": 0.047746,
+          "oracle": 0.666497,
+          "success": false,
+          "RE": 0.928363
+        },
+        {
+          "t": 392,
+          "pred": 0.074,
+          "oracle": 0.64218,
+          "success": false,
+          "RE": 0.884768
+        },
+        {
+          "t": 393,
+          "pred": 0.006913,
+          "oracle": 0.685537,
+          "success": false,
+          "RE": 0.989916
+        },
+        {
+          "t": 398,
+          "pred": 0.052462,
+          "oracle": 0.586093,
+          "success": false,
+          "RE": 0.910488
+        },
+        {
+          "t": 401,
+          "pred": 0.026388,
+          "oracle": 0.584675,
+          "success": false,
+          "RE": 0.954867
+        },
+        {
+          "t": 402,
+          "pred": 0.007386,
+          "oracle": 0.595638,
+          "success": false,
+          "RE": 0.9876
+        },
+        {
+          "t": 405,
+          "pred": 0.008895,
+          "oracle": 0.579363,
+          "success": false,
+          "RE": 0.984647
+        },
+        {
+          "t": 406,
+          "pred": 0.005459,
+          "oracle": 0.614445,
+          "success": false,
+          "RE": 0.991115
+        },
+        {
+          "t": 408,
+          "pred": 0.039641,
+          "oracle": 0.538046,
+          "success": false,
+          "RE": 0.926325
+        },
+        {
+          "t": 409,
+          "pred": 0.064918,
+          "oracle": 0.59963,
+          "success": false,
+          "RE": 0.891737
+        },
+        {
+          "t": 411,
+          "pred": 0.061844,
+          "oracle": 0.583437,
+          "success": false,
+          "RE": 0.894001
+        },
+        {
+          "t": 413,
+          "pred": 0.006281,
+          "oracle": 0.409192,
+          "success": true,
+          "RE": 0.984651
+        },
+        {
+          "t": 414,
+          "pred": 0.005733,
+          "oracle": 0.380766,
+          "success": true,
+          "RE": 0.984943
+        },
+        {
+          "t": 417,
+          "pred": 0.049002,
+          "oracle": 0.566747,
+          "success": false,
+          "RE": 0.913538
+        },
+        {
+          "t": 418,
+          "pred": 0.009582,
+          "oracle": 0.704572,
+          "success": false,
+          "RE": 0.9864
+        },
+        {
+          "t": 420,
+          "pred": 6e-05,
+          "oracle": 0.521584,
+          "success": false,
+          "RE": 0.999885
+        },
+        {
+          "t": 421,
+          "pred": 0.292317,
+          "oracle": 0.677616,
+          "success": false,
+          "RE": 0.568609
+        },
+        {
+          "t": 423,
+          "pred": 0.005718,
+          "oracle": 0.437006,
+          "success": true,
+          "RE": 0.986915
+        },
+        {
+          "t": 424,
+          "pred": 0.012708,
+          "oracle": 0.521161,
+          "success": false,
+          "RE": 0.975616
+        },
+        {
+          "t": 425,
+          "pred": 0.010328,
+          "oracle": 0.377788,
+          "success": true,
+          "RE": 0.972661
+        },
+        {
+          "t": 426,
+          "pred": 0.076359,
+          "oracle": 0.419325,
+          "success": true,
+          "RE": 0.817899
+        },
+        {
+          "t": 428,
+          "pred": 0.077626,
+          "oracle": 0.3768,
+          "success": true,
+          "RE": 0.793987
+        },
+        {
+          "t": 430,
+          "pred": 0.005946,
+          "oracle": 0.434536,
+          "success": true,
+          "RE": 0.986316
+        },
+        {
+          "t": 433,
+          "pred": 0.093781,
+          "oracle": 0.340157,
+          "success": true,
+          "RE": 0.724301
+        },
+        {
+          "t": 435,
+          "pred": 0.072411,
+          "oracle": 0.395984,
+          "success": true,
+          "RE": 0.817137
+        },
+        {
+          "t": 437,
+          "pred": 0.010273,
+          "oracle": 0.419896,
+          "success": true,
+          "RE": 0.975535
+        },
+        {
+          "t": 440,
+          "pred": 0.168213,
+          "oracle": 0.420249,
+          "success": true,
+          "RE": 0.59973
+        },
+        {
+          "t": 442,
+          "pred": 0.056164,
+          "oracle": 0.486966,
+          "success": true,
+          "RE": 0.884666
+        },
+        {
+          "t": 447,
+          "pred": 0.223061,
+          "oracle": 0.434852,
+          "success": true,
+          "RE": 0.487041
+        },
+        {
+          "t": 449,
+          "pred": 0.012546,
+          "oracle": 0.349579,
+          "success": true,
+          "RE": 0.96411
+        }
+      ]
+    },
+    "BMA": {
+      "precision": 0.957082,
+      "mean_RE": 0.632998,
+      "median_RE": 0.730279,
+      "n_samples": 233,
+      "per_sample": [
+        {
+          "t": 0,
+          "pred": 0.002989,
+          "oracle": 0.514067,
+          "success": false,
+          "RE": 0.994185
+        },
+        {
+          "t": 1,
+          "pred": 0.008296,
+          "oracle": 0.417012,
+          "success": true,
+          "RE": 0.980106
+        },
+        {
+          "t": 3,
+          "pred": 0.00382,
+          "oracle": 0.428268,
+          "success": true,
+          "RE": 0.99108
+        },
+        {
+          "t": 4,
+          "pred": 0.000629,
+          "oracle": 0.48813,
+          "success": true,
+          "RE": 0.998712
+        },
+        {
+          "t": 5,
+          "pred": 0.003415,
+          "oracle": 0.669949,
+          "success": false,
+          "RE": 0.994902
+        },
+        {
+          "t": 6,
+          "pred": 0.003161,
+          "oracle": 0.28844,
+          "success": true,
+          "RE": 0.989042
+        },
+        {
+          "t": 7,
+          "pred": 0.003259,
+          "oracle": 0.503617,
+          "success": false,
+          "RE": 0.993528
+        },
+        {
+          "t": 9,
+          "pred": 1e-06,
+          "oracle": 0.342828,
+          "success": true,
+          "RE": 0.999996
+        },
+        {
+          "t": 10,
+          "pred": 0.013808,
+          "oracle": 0.297335,
+          "success": true,
+          "RE": 0.953562
+        },
+        {
+          "t": 13,
+          "pred": 0.001597,
+          "oracle": 0.462706,
+          "success": true,
+          "RE": 0.996549
+        },
+        {
+          "t": 14,
+          "pred": 0.001655,
+          "oracle": 0.509175,
+          "success": false,
+          "RE": 0.99675
+        },
+        {
+          "t": 17,
+          "pred": 0.007705,
+          "oracle": 0.319302,
+          "success": true,
+          "RE": 0.975869
+        },
+        {
+          "t": 19,
+          "pred": 0.004347,
+          "oracle": 0.465597,
+          "success": true,
+          "RE": 0.990664
+        },
+        {
+          "t": 22,
+          "pred": 0.001996,
+          "oracle": 0.337209,
+          "success": true,
+          "RE": 0.994081
+        },
+        {
+          "t": 24,
+          "pred": 0.00182,
+          "oracle": 0.347428,
+          "success": true,
+          "RE": 0.994762
+        },
+        {
+          "t": 27,
+          "pred": 0.000144,
+          "oracle": 0.465032,
+          "success": true,
+          "RE": 0.99969
+        },
+        {
+          "t": 28,
+          "pred": 0.001361,
+          "oracle": 0.322226,
+          "success": true,
+          "RE": 0.995778
+        },
+        {
+          "t": 30,
+          "pred": 0.004289,
+          "oracle": 0.492062,
+          "success": true,
+          "RE": 0.991284
+        },
+        {
+          "t": 33,
+          "pred": 0.037914,
+          "oracle": 0.49908,
+          "success": true,
+          "RE": 0.924033
+        },
+        {
+          "t": 34,
+          "pred": 0.006308,
+          "oracle": 0.439928,
+          "success": true,
+          "RE": 0.985661
+        },
+        {
+          "t": 36,
+          "pred": 0.003115,
+          "oracle": 0.569143,
+          "success": false,
+          "RE": 0.994527
+        },
+        {
+          "t": 37,
+          "pred": 0.00816,
+          "oracle": 0.55524,
+          "success": false,
+          "RE": 0.985303
+        },
+        {
+          "t": 40,
+          "pred": 0.001661,
+          "oracle": 0.401575,
+          "success": true,
+          "RE": 0.995864
+        },
+        {
+          "t": 42,
+          "pred": 0.003775,
+          "oracle": 0.465068,
+          "success": true,
+          "RE": 0.991882
+        },
+        {
+          "t": 46,
+          "pred": 0.006288,
+          "oracle": 0.357101,
+          "success": true,
+          "RE": 0.982392
+        },
+        {
+          "t": 49,
+          "pred": 0.032903,
+          "oracle": 0.431569,
+          "success": true,
+          "RE": 0.923759
+        },
+        {
+          "t": 51,
+          "pred": 0.002515,
+          "oracle": 0.52035,
+          "success": false,
+          "RE": 0.995166
+        },
+        {
+          "t": 52,
+          "pred": 0.000853,
+          "oracle": 0.497029,
+          "success": true,
+          "RE": 0.998284
+        },
+        {
+          "t": 55,
+          "pred": 0.007362,
+          "oracle": 0.366293,
+          "success": true,
+          "RE": 0.979901
+        },
+        {
+          "t": 56,
+          "pred": 0.013805,
+          "oracle": 0.450047,
+          "success": true,
+          "RE": 0.969326
+        },
+        {
+          "t": 58,
+          "pred": 0.000322,
+          "oracle": 0.621105,
+          "success": false,
+          "RE": 0.999481
+        },
+        {
+          "t": 61,
+          "pred": 0.000511,
+          "oracle": 0.35273,
+          "success": true,
+          "RE": 0.99855
+        },
+        {
+          "t": 63,
+          "pred": 0.003088,
+          "oracle": 0.364872,
+          "success": true,
+          "RE": 0.991535
+        },
+        {
+          "t": 65,
+          "pred": 0.003019,
+          "oracle": 0.483721,
+          "success": true,
+          "RE": 0.993758
+        },
+        {
+          "t": 66,
+          "pred": 0.001267,
+          "oracle": 0.55563,
+          "success": false,
+          "RE": 0.997719
+        },
+        {
+          "t": 68,
+          "pred": 0.0486,
+          "oracle": 0.393977,
+          "success": true,
+          "RE": 0.876644
+        },
+        {
+          "t": 70,
+          "pred": 0.004634,
+          "oracle": 0.370806,
+          "success": true,
+          "RE": 0.987502
+        },
+        {
+          "t": 71,
+          "pred": 0.01577,
+          "oracle": 0.441834,
+          "success": true,
+          "RE": 0.964307
+        },
+        {
+          "t": 74,
+          "pred": 0.002256,
+          "oracle": 0.412331,
+          "success": true,
+          "RE": 0.994529
+        },
+        {
+          "t": 75,
+          "pred": 0.001953,
+          "oracle": 0.40467,
+          "success": true,
+          "RE": 0.995175
+        },
+        {
+          "t": 78,
+          "pred": 0.004749,
+          "oracle": 0.443961,
+          "success": true,
+          "RE": 0.989303
+        },
+        {
+          "t": 79,
+          "pred": 0.020455,
+          "oracle": 0.374988,
+          "success": true,
+          "RE": 0.945452
+        },
+        {
+          "t": 80,
+          "pred": 0.001369,
+          "oracle": 0.485771,
+          "success": true,
+          "RE": 0.997182
+        },
+        {
+          "t": 82,
+          "pred": 0.004784,
+          "oracle": 0.591888,
+          "success": false,
+          "RE": 0.991917
+        },
+        {
+          "t": 84,
+          "pred": 0.00443,
+          "oracle": 0.376881,
+          "success": true,
+          "RE": 0.988245
+        },
+        {
+          "t": 89,
+          "pred": 0.0192,
+          "oracle": 0.414899,
+          "success": true,
+          "RE": 0.953724
+        },
+        {
+          "t": 90,
+          "pred": 0.005328,
+          "oracle": 0.380412,
+          "success": true,
+          "RE": 0.985995
+        },
+        {
+          "t": 92,
+          "pred": 0.0,
+          "oracle": 0.268805,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 94,
+          "pred": 4e-06,
+          "oracle": 0.403233,
+          "success": true,
+          "RE": 0.99999
+        },
+        {
+          "t": 96,
+          "pred": 2e-06,
+          "oracle": 0.275934,
+          "success": true,
+          "RE": 0.999994
+        },
+        {
+          "t": 97,
+          "pred": 0.0,
+          "oracle": 0.254262,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 99,
+          "pred": 0.007102,
+          "oracle": 0.475184,
+          "success": true,
+          "RE": 0.985054
+        },
+        {
+          "t": 101,
+          "pred": 0.010529,
+          "oracle": 0.445225,
+          "success": true,
+          "RE": 0.976352
+        },
+        {
+          "t": 102,
+          "pred": 0.000485,
+          "oracle": 0.365033,
+          "success": true,
+          "RE": 0.99867
+        },
+        {
+          "t": 103,
+          "pred": 0.020951,
+          "oracle": 0.358551,
+          "success": true,
+          "RE": 0.941569
+        },
+        {
+          "t": 104,
+          "pred": 0.012395,
+          "oracle": 0.397361,
+          "success": true,
+          "RE": 0.968807
+        },
+        {
+          "t": 105,
+          "pred": 0.0026,
+          "oracle": 0.311862,
+          "success": true,
+          "RE": 0.991664
+        },
+        {
+          "t": 107,
+          "pred": 0.009735,
+          "oracle": 0.322552,
+          "success": true,
+          "RE": 0.969819
+        },
+        {
+          "t": 109,
+          "pred": 0.000174,
+          "oracle": 0.356296,
+          "success": true,
+          "RE": 0.999512
+        },
+        {
+          "t": 110,
+          "pred": 0.026285,
+          "oracle": 0.443791,
+          "success": true,
+          "RE": 0.940771
+        },
+        {
+          "t": 116,
+          "pred": 0.014535,
+          "oracle": 0.341253,
+          "success": true,
+          "RE": 0.957406
+        },
+        {
+          "t": 117,
+          "pred": 0.000348,
+          "oracle": 0.232095,
+          "success": true,
+          "RE": 0.9985
+        },
+        {
+          "t": 118,
+          "pred": 0.003966,
+          "oracle": 0.35357,
+          "success": true,
+          "RE": 0.988782
+        },
+        {
+          "t": 121,
+          "pred": 0.019628,
+          "oracle": 0.434364,
+          "success": true,
+          "RE": 0.954811
+        },
+        {
+          "t": 122,
+          "pred": 0.018203,
+          "oracle": 0.2859,
+          "success": true,
+          "RE": 0.936332
+        },
+        {
+          "t": 129,
+          "pred": 0.025703,
+          "oracle": 0.341966,
+          "success": true,
+          "RE": 0.924838
+        },
+        {
+          "t": 134,
+          "pred": 0.039283,
+          "oracle": 0.250301,
+          "success": true,
+          "RE": 0.843057
+        },
+        {
+          "t": 136,
+          "pred": 0.021143,
+          "oracle": 0.462339,
+          "success": true,
+          "RE": 0.95427
+        },
+        {
+          "t": 138,
+          "pred": 0.024805,
+          "oracle": 0.305044,
+          "success": true,
+          "RE": 0.918684
+        },
+        {
+          "t": 140,
+          "pred": 0.033982,
+          "oracle": 0.372114,
+          "success": true,
+          "RE": 0.908679
+        },
+        {
+          "t": 141,
+          "pred": 0.041225,
+          "oracle": 0.365302,
+          "success": true,
+          "RE": 0.887147
+        },
+        {
+          "t": 145,
+          "pred": 0.344593,
+          "oracle": 0.336018,
+          "success": true,
+          "RE": 0.025519
+        },
+        {
+          "t": 147,
+          "pred": 0.130007,
+          "oracle": 0.2532,
+          "success": true,
+          "RE": 0.486545
+        },
+        {
+          "t": 148,
+          "pred": 0.111763,
+          "oracle": 0.371572,
+          "success": true,
+          "RE": 0.699216
+        },
+        {
+          "t": 149,
+          "pred": 0.149878,
+          "oracle": 0.384236,
+          "success": true,
+          "RE": 0.609931
+        },
+        {
+          "t": 150,
+          "pred": 0.183898,
+          "oracle": 0.275977,
+          "success": true,
+          "RE": 0.333647
+        },
+        {
+          "t": 151,
+          "pred": 0.325296,
+          "oracle": 0.451071,
+          "success": true,
+          "RE": 0.278836
+        },
+        {
+          "t": 152,
+          "pred": 0.330482,
+          "oracle": 0.413725,
+          "success": true,
+          "RE": 0.201205
+        },
+        {
+          "t": 153,
+          "pred": 0.327356,
+          "oracle": 0.450859,
+          "success": true,
+          "RE": 0.27393
+        },
+        {
+          "t": 154,
+          "pred": 0.093132,
+          "oracle": 0.348265,
+          "success": true,
+          "RE": 0.732583
+        },
+        {
+          "t": 158,
+          "pred": 0.20446,
+          "oracle": 0.339208,
+          "success": true,
+          "RE": 0.397241
+        },
+        {
+          "t": 161,
+          "pred": 0.269991,
+          "oracle": 0.414579,
+          "success": true,
+          "RE": 0.348758
+        },
+        {
+          "t": 163,
+          "pred": 0.115711,
+          "oracle": 0.395583,
+          "success": true,
+          "RE": 0.707493
+        },
+        {
+          "t": 164,
+          "pred": 0.334091,
+          "oracle": 0.273362,
+          "success": true,
+          "RE": 0.222155
+        },
+        {
+          "t": 166,
+          "pred": 0.335911,
+          "oracle": 0.475216,
+          "success": true,
+          "RE": 0.29314
+        },
+        {
+          "t": 167,
+          "pred": 0.255328,
+          "oracle": 0.26777,
+          "success": true,
+          "RE": 0.046464
+        },
+        {
+          "t": 170,
+          "pred": 0.304845,
+          "oracle": 0.345594,
+          "success": true,
+          "RE": 0.117912
+        },
+        {
+          "t": 172,
+          "pred": 0.285637,
+          "oracle": 0.488925,
+          "success": true,
+          "RE": 0.415785
+        },
+        {
+          "t": 173,
+          "pred": 0.040256,
+          "oracle": 0.36921,
+          "success": true,
+          "RE": 0.890967
+        },
+        {
+          "t": 174,
+          "pred": 0.066671,
+          "oracle": 0.318804,
+          "success": true,
+          "RE": 0.790872
+        },
+        {
+          "t": 175,
+          "pred": 0.281186,
+          "oracle": 0.451216,
+          "success": true,
+          "RE": 0.376827
+        },
+        {
+          "t": 176,
+          "pred": 0.02843,
+          "oracle": 0.399191,
+          "success": true,
+          "RE": 0.92878
+        },
+        {
+          "t": 178,
+          "pred": 0.261361,
+          "oracle": 0.357936,
+          "success": true,
+          "RE": 0.26981
+        },
+        {
+          "t": 182,
+          "pred": 0.231857,
+          "oracle": 0.453373,
+          "success": true,
+          "RE": 0.488596
+        },
+        {
+          "t": 189,
+          "pred": 0.302049,
+          "oracle": 0.319209,
+          "success": true,
+          "RE": 0.05376
+        },
+        {
+          "t": 190,
+          "pred": 0.388572,
+          "oracle": 0.310521,
+          "success": true,
+          "RE": 0.251353
+        },
+        {
+          "t": 191,
+          "pred": 0.226468,
+          "oracle": 0.442226,
+          "success": true,
+          "RE": 0.487891
+        },
+        {
+          "t": 192,
+          "pred": 0.314699,
+          "oracle": 0.371861,
+          "success": true,
+          "RE": 0.153719
+        },
+        {
+          "t": 194,
+          "pred": 0.265568,
+          "oracle": 0.404684,
+          "success": true,
+          "RE": 0.343763
+        },
+        {
+          "t": 196,
+          "pred": 0.14069,
+          "oracle": 0.403906,
+          "success": true,
+          "RE": 0.651675
+        },
+        {
+          "t": 199,
+          "pred": 0.268177,
+          "oracle": 0.349408,
+          "success": true,
+          "RE": 0.232482
+        },
+        {
+          "t": 202,
+          "pred": 0.287012,
+          "oracle": 0.361895,
+          "success": true,
+          "RE": 0.20692
+        },
+        {
+          "t": 203,
+          "pred": 0.290765,
+          "oracle": 0.369585,
+          "success": true,
+          "RE": 0.213267
+        },
+        {
+          "t": 204,
+          "pred": 0.029709,
+          "oracle": 0.286127,
+          "success": true,
+          "RE": 0.896167
+        },
+        {
+          "t": 205,
+          "pred": 0.128652,
+          "oracle": 0.266748,
+          "success": true,
+          "RE": 0.517703
+        },
+        {
+          "t": 206,
+          "pred": 0.041221,
+          "oracle": 0.278062,
+          "success": true,
+          "RE": 0.851757
+        },
+        {
+          "t": 207,
+          "pred": 0.092834,
+          "oracle": 0.264272,
+          "success": true,
+          "RE": 0.648716
+        },
+        {
+          "t": 208,
+          "pred": 0.287534,
+          "oracle": 0.353795,
+          "success": true,
+          "RE": 0.187286
+        },
+        {
+          "t": 209,
+          "pred": 0.391742,
+          "oracle": 0.45384,
+          "success": true,
+          "RE": 0.136827
+        },
+        {
+          "t": 211,
+          "pred": 0.210718,
+          "oracle": 0.27943,
+          "success": true,
+          "RE": 0.245902
+        },
+        {
+          "t": 215,
+          "pred": 0.331904,
+          "oracle": 0.35903,
+          "success": true,
+          "RE": 0.075553
+        },
+        {
+          "t": 217,
+          "pred": 0.243349,
+          "oracle": 0.41991,
+          "success": true,
+          "RE": 0.420473
+        },
+        {
+          "t": 218,
+          "pred": 0.275585,
+          "oracle": 0.360098,
+          "success": true,
+          "RE": 0.234696
+        },
+        {
+          "t": 223,
+          "pred": 0.196555,
+          "oracle": 0.416574,
+          "success": true,
+          "RE": 0.528163
+        },
+        {
+          "t": 225,
+          "pred": 0.107361,
+          "oracle": 0.346384,
+          "success": true,
+          "RE": 0.690054
+        },
+        {
+          "t": 226,
+          "pred": 0.243606,
+          "oracle": 0.3727,
+          "success": true,
+          "RE": 0.346373
+        },
+        {
+          "t": 227,
+          "pred": 0.040849,
+          "oracle": 0.290173,
+          "success": true,
+          "RE": 0.859224
+        },
+        {
+          "t": 233,
+          "pred": 0.251076,
+          "oracle": 0.437821,
+          "success": true,
+          "RE": 0.426533
+        },
+        {
+          "t": 234,
+          "pred": 0.095504,
+          "oracle": 0.409502,
+          "success": true,
+          "RE": 0.766781
+        },
+        {
+          "t": 235,
+          "pred": 0.006848,
+          "oracle": 0.36246,
+          "success": true,
+          "RE": 0.981108
+        },
+        {
+          "t": 237,
+          "pred": 0.023782,
+          "oracle": 0.406299,
+          "success": true,
+          "RE": 0.941468
+        },
+        {
+          "t": 239,
+          "pred": 0.01992,
+          "oracle": 0.350811,
+          "success": true,
+          "RE": 0.943218
+        },
+        {
+          "t": 240,
+          "pred": 0.220068,
+          "oracle": 0.329775,
+          "success": true,
+          "RE": 0.332672
+        },
+        {
+          "t": 242,
+          "pred": 0.039525,
+          "oracle": 0.285805,
+          "success": true,
+          "RE": 0.861705
+        },
+        {
+          "t": 243,
+          "pred": 0.022411,
+          "oracle": 0.408423,
+          "success": true,
+          "RE": 0.945129
+        },
+        {
+          "t": 247,
+          "pred": 0.242501,
+          "oracle": 0.395243,
+          "success": true,
+          "RE": 0.38645
+        },
+        {
+          "t": 248,
+          "pred": 0.049538,
+          "oracle": 0.376682,
+          "success": true,
+          "RE": 0.86849
+        },
+        {
+          "t": 249,
+          "pred": 0.023294,
+          "oracle": 0.266874,
+          "success": true,
+          "RE": 0.912716
+        },
+        {
+          "t": 250,
+          "pred": 0.032586,
+          "oracle": 0.262639,
+          "success": true,
+          "RE": 0.87593
+        },
+        {
+          "t": 251,
+          "pred": 0.134636,
+          "oracle": 0.395783,
+          "success": true,
+          "RE": 0.659824
+        },
+        {
+          "t": 254,
+          "pred": 0.024696,
+          "oracle": 0.409629,
+          "success": true,
+          "RE": 0.939711
+        },
+        {
+          "t": 256,
+          "pred": 0.072099,
+          "oracle": 0.358775,
+          "success": true,
+          "RE": 0.79904
+        },
+        {
+          "t": 259,
+          "pred": 0.094446,
+          "oracle": 0.250597,
+          "success": true,
+          "RE": 0.623116
+        },
+        {
+          "t": 260,
+          "pred": 0.03706,
+          "oracle": 0.378488,
+          "success": true,
+          "RE": 0.902085
+        },
+        {
+          "t": 263,
+          "pred": 0.027003,
+          "oracle": 0.316343,
+          "success": true,
+          "RE": 0.91464
+        },
+        {
+          "t": 264,
+          "pred": 0.187139,
+          "oracle": 0.375773,
+          "success": true,
+          "RE": 0.501989
+        },
+        {
+          "t": 268,
+          "pred": 0.199653,
+          "oracle": 0.427054,
+          "success": true,
+          "RE": 0.532488
+        },
+        {
+          "t": 272,
+          "pred": 0.026997,
+          "oracle": 0.284099,
+          "success": true,
+          "RE": 0.904974
+        },
+        {
+          "t": 275,
+          "pred": 0.030154,
+          "oracle": 0.313961,
+          "success": true,
+          "RE": 0.903955
+        },
+        {
+          "t": 276,
+          "pred": 0.028926,
+          "oracle": 0.246071,
+          "success": true,
+          "RE": 0.882448
+        },
+        {
+          "t": 279,
+          "pred": 0.075392,
+          "oracle": 0.456726,
+          "success": true,
+          "RE": 0.83493
+        },
+        {
+          "t": 282,
+          "pred": 0.470275,
+          "oracle": 0.439951,
+          "success": true,
+          "RE": 0.068926
+        },
+        {
+          "t": 283,
+          "pred": 0.218057,
+          "oracle": 0.343434,
+          "success": true,
+          "RE": 0.365069
+        },
+        {
+          "t": 285,
+          "pred": 0.349548,
+          "oracle": 0.481345,
+          "success": true,
+          "RE": 0.27381
+        },
+        {
+          "t": 286,
+          "pred": 0.084404,
+          "oracle": 0.298321,
+          "success": true,
+          "RE": 0.71707
+        },
+        {
+          "t": 288,
+          "pred": 0.427144,
+          "oracle": 0.325433,
+          "success": true,
+          "RE": 0.312542
+        },
+        {
+          "t": 290,
+          "pred": 0.449113,
+          "oracle": 0.462557,
+          "success": true,
+          "RE": 0.029064
+        },
+        {
+          "t": 291,
+          "pred": 0.331399,
+          "oracle": 0.350856,
+          "success": true,
+          "RE": 0.055458
+        },
+        {
+          "t": 295,
+          "pred": 0.456572,
+          "oracle": 0.410909,
+          "success": true,
+          "RE": 0.111125
+        },
+        {
+          "t": 296,
+          "pred": 0.061547,
+          "oracle": 0.314626,
+          "success": true,
+          "RE": 0.80438
+        },
+        {
+          "t": 297,
+          "pred": 0.202755,
+          "oracle": 0.312522,
+          "success": true,
+          "RE": 0.351228
+        },
+        {
+          "t": 299,
+          "pred": 0.126608,
+          "oracle": 0.321876,
+          "success": true,
+          "RE": 0.606656
+        },
+        {
+          "t": 301,
+          "pred": 0.340348,
+          "oracle": 0.476242,
+          "success": true,
+          "RE": 0.285347
+        },
+        {
+          "t": 302,
+          "pred": 0.229613,
+          "oracle": 0.330498,
+          "success": true,
+          "RE": 0.305252
+        },
+        {
+          "t": 303,
+          "pred": 0.362686,
+          "oracle": 0.467965,
+          "success": true,
+          "RE": 0.224973
+        },
+        {
+          "t": 304,
+          "pred": 0.075959,
+          "oracle": 0.306508,
+          "success": true,
+          "RE": 0.752179
+        },
+        {
+          "t": 305,
+          "pred": 0.117476,
+          "oracle": 0.266301,
+          "success": true,
+          "RE": 0.558859
+        },
+        {
+          "t": 307,
+          "pred": 0.341282,
+          "oracle": 0.377104,
+          "success": true,
+          "RE": 0.094991
+        },
+        {
+          "t": 311,
+          "pred": 0.040941,
+          "oracle": 0.259943,
+          "success": true,
+          "RE": 0.842499
+        },
+        {
+          "t": 312,
+          "pred": 0.178105,
+          "oracle": 0.345703,
+          "success": true,
+          "RE": 0.484803
+        },
+        {
+          "t": 314,
+          "pred": 0.366226,
+          "oracle": 0.420102,
+          "success": true,
+          "RE": 0.128245
+        },
+        {
+          "t": 315,
+          "pred": 0.413747,
+          "oracle": 0.418227,
+          "success": true,
+          "RE": 0.010713
+        },
+        {
+          "t": 316,
+          "pred": 0.174494,
+          "oracle": 0.269566,
+          "success": true,
+          "RE": 0.352687
+        },
+        {
+          "t": 319,
+          "pred": 0.423119,
+          "oracle": 0.488652,
+          "success": true,
+          "RE": 0.13411
+        },
+        {
+          "t": 320,
+          "pred": 0.465591,
+          "oracle": 0.466152,
+          "success": true,
+          "RE": 0.001203
+        },
+        {
+          "t": 321,
+          "pred": 0.238775,
+          "oracle": 0.302392,
+          "success": true,
+          "RE": 0.210382
+        },
+        {
+          "t": 322,
+          "pred": 0.246024,
+          "oracle": 0.351307,
+          "success": true,
+          "RE": 0.29969
+        },
+        {
+          "t": 323,
+          "pred": 0.484825,
+          "oracle": 0.423792,
+          "success": true,
+          "RE": 0.144014
+        },
+        {
+          "t": 324,
+          "pred": 0.11144,
+          "oracle": 0.368232,
+          "success": true,
+          "RE": 0.697365
+        },
+        {
+          "t": 327,
+          "pred": 0.443017,
+          "oracle": 0.459368,
+          "success": true,
+          "RE": 0.035596
+        },
+        {
+          "t": 331,
+          "pred": 0.317198,
+          "oracle": 0.299299,
+          "success": true,
+          "RE": 0.059802
+        },
+        {
+          "t": 333,
+          "pred": 0.117997,
+          "oracle": 0.350829,
+          "success": true,
+          "RE": 0.663661
+        },
+        {
+          "t": 339,
+          "pred": 0.470734,
+          "oracle": 0.427276,
+          "success": true,
+          "RE": 0.10171
+        },
+        {
+          "t": 340,
+          "pred": 0.475715,
+          "oracle": 0.409254,
+          "success": true,
+          "RE": 0.162396
+        },
+        {
+          "t": 341,
+          "pred": 0.129527,
+          "oracle": 0.292603,
+          "success": true,
+          "RE": 0.557328
+        },
+        {
+          "t": 342,
+          "pred": 0.479785,
+          "oracle": 0.425058,
+          "success": true,
+          "RE": 0.12875
+        },
+        {
+          "t": 344,
+          "pred": 0.424432,
+          "oracle": 0.359327,
+          "success": true,
+          "RE": 0.181186
+        },
+        {
+          "t": 345,
+          "pred": 0.361466,
+          "oracle": 0.462266,
+          "success": true,
+          "RE": 0.218058
+        },
+        {
+          "t": 346,
+          "pred": 0.169834,
+          "oracle": 0.362368,
+          "success": true,
+          "RE": 0.531322
+        },
+        {
+          "t": 348,
+          "pred": 0.127652,
+          "oracle": 0.35347,
+          "success": true,
+          "RE": 0.638861
+        },
+        {
+          "t": 349,
+          "pred": 0.441635,
+          "oracle": 0.462712,
+          "success": true,
+          "RE": 0.045551
+        },
+        {
+          "t": 350,
+          "pred": 0.235684,
+          "oracle": 0.443826,
+          "success": true,
+          "RE": 0.468972
+        },
+        {
+          "t": 352,
+          "pred": 0.374796,
+          "oracle": 0.370213,
+          "success": true,
+          "RE": 0.012379
+        },
+        {
+          "t": 354,
+          "pred": 0.484808,
+          "oracle": 0.303726,
+          "success": true,
+          "RE": 0.596205
+        },
+        {
+          "t": 355,
+          "pred": 0.250056,
+          "oracle": 0.296749,
+          "success": true,
+          "RE": 0.157349
+        },
+        {
+          "t": 356,
+          "pred": 0.366223,
+          "oracle": 0.425158,
+          "success": true,
+          "RE": 0.138621
+        },
+        {
+          "t": 359,
+          "pred": 0.237744,
+          "oracle": 0.440416,
+          "success": true,
+          "RE": 0.460183
+        },
+        {
+          "t": 360,
+          "pred": 0.432806,
+          "oracle": 0.432217,
+          "success": true,
+          "RE": 0.001363
+        },
+        {
+          "t": 361,
+          "pred": 0.062323,
+          "oracle": 0.227602,
+          "success": true,
+          "RE": 0.726175
+        },
+        {
+          "t": 362,
+          "pred": 0.143562,
+          "oracle": 0.389404,
+          "success": true,
+          "RE": 0.631329
+        },
+        {
+          "t": 365,
+          "pred": 0.44817,
+          "oracle": 0.491912,
+          "success": true,
+          "RE": 0.088923
+        },
+        {
+          "t": 368,
+          "pred": 0.112381,
+          "oracle": 0.416655,
+          "success": true,
+          "RE": 0.730279
+        },
+        {
+          "t": 369,
+          "pred": 0.351901,
+          "oracle": 0.484913,
+          "success": true,
+          "RE": 0.274302
+        },
+        {
+          "t": 370,
+          "pred": 0.246794,
+          "oracle": 0.375458,
+          "success": true,
+          "RE": 0.342684
+        },
+        {
+          "t": 371,
+          "pred": 0.031549,
+          "oracle": 0.348407,
+          "success": true,
+          "RE": 0.909447
+        },
+        {
+          "t": 374,
+          "pred": 0.111144,
+          "oracle": 0.300558,
+          "success": true,
+          "RE": 0.630208
+        },
+        {
+          "t": 376,
+          "pred": 0.053583,
+          "oracle": 0.447692,
+          "success": true,
+          "RE": 0.880312
+        },
+        {
+          "t": 378,
+          "pred": 0.043467,
+          "oracle": 0.403722,
+          "success": true,
+          "RE": 0.892334
+        },
+        {
+          "t": 379,
+          "pred": 0.052351,
+          "oracle": 0.386751,
+          "success": true,
+          "RE": 0.864639
+        },
+        {
+          "t": 380,
+          "pred": 0.158287,
+          "oracle": 0.443632,
+          "success": true,
+          "RE": 0.643202
+        },
+        {
+          "t": 382,
+          "pred": 0.029621,
+          "oracle": 0.32273,
+          "success": true,
+          "RE": 0.908218
+        },
+        {
+          "t": 385,
+          "pred": 0.034293,
+          "oracle": 0.250838,
+          "success": true,
+          "RE": 0.863288
+        },
+        {
+          "t": 389,
+          "pred": 0.033309,
+          "oracle": 0.288922,
+          "success": true,
+          "RE": 0.884714
+        },
+        {
+          "t": 391,
+          "pred": 0.046168,
+          "oracle": 0.360089,
+          "success": true,
+          "RE": 0.871788
+        },
+        {
+          "t": 392,
+          "pred": 0.029162,
+          "oracle": 0.374405,
+          "success": true,
+          "RE": 0.922111
+        },
+        {
+          "t": 393,
+          "pred": 0.112949,
+          "oracle": 0.426522,
+          "success": true,
+          "RE": 0.735186
+        },
+        {
+          "t": 398,
+          "pred": 0.029249,
+          "oracle": 0.269231,
+          "success": true,
+          "RE": 0.891362
+        },
+        {
+          "t": 401,
+          "pred": 0.031562,
+          "oracle": 0.26854,
+          "success": true,
+          "RE": 0.882467
+        },
+        {
+          "t": 402,
+          "pred": 0.219125,
+          "oracle": 0.419263,
+          "success": true,
+          "RE": 0.477357
+        },
+        {
+          "t": 405,
+          "pred": 0.129312,
+          "oracle": 0.364093,
+          "success": true,
+          "RE": 0.644838
+        },
+        {
+          "t": 406,
+          "pred": 0.049249,
+          "oracle": 0.298149,
+          "success": true,
+          "RE": 0.834816
+        },
+        {
+          "t": 408,
+          "pred": 0.069095,
+          "oracle": 0.229045,
+          "success": true,
+          "RE": 0.698335
+        },
+        {
+          "t": 409,
+          "pred": 0.058516,
+          "oracle": 0.268709,
+          "success": true,
+          "RE": 0.782234
+        },
+        {
+          "t": 411,
+          "pred": 0.033446,
+          "oracle": 0.296384,
+          "success": true,
+          "RE": 0.887154
+        },
+        {
+          "t": 413,
+          "pred": 0.099502,
+          "oracle": 0.24014,
+          "success": true,
+          "RE": 0.585652
+        },
+        {
+          "t": 414,
+          "pred": 0.232073,
+          "oracle": 0.286123,
+          "success": true,
+          "RE": 0.188906
+        },
+        {
+          "t": 417,
+          "pred": 0.028404,
+          "oracle": 0.255341,
+          "success": true,
+          "RE": 0.88876
+        },
+        {
+          "t": 418,
+          "pred": 0.078858,
+          "oracle": 0.409702,
+          "success": true,
+          "RE": 0.807523
+        },
+        {
+          "t": 420,
+          "pred": 0.474023,
+          "oracle": 0.463634,
+          "success": true,
+          "RE": 0.022406
+        },
+        {
+          "t": 421,
+          "pred": 0.380247,
+          "oracle": 0.354073,
+          "success": true,
+          "RE": 0.073923
+        },
+        {
+          "t": 423,
+          "pred": 0.199727,
+          "oracle": 0.40229,
+          "success": true,
+          "RE": 0.503525
+        },
+        {
+          "t": 424,
+          "pred": 0.11073,
+          "oracle": 0.380903,
+          "success": true,
+          "RE": 0.709297
+        },
+        {
+          "t": 425,
+          "pred": 0.252836,
+          "oracle": 0.367477,
+          "success": true,
+          "RE": 0.311968
+        },
+        {
+          "t": 426,
+          "pred": 0.471965,
+          "oracle": 0.455977,
+          "success": true,
+          "RE": 0.035064
+        },
+        {
+          "t": 428,
+          "pred": 0.483478,
+          "oracle": 0.400456,
+          "success": true,
+          "RE": 0.207319
+        },
+        {
+          "t": 430,
+          "pred": 0.155939,
+          "oracle": 0.384173,
+          "success": true,
+          "RE": 0.594093
+        },
+        {
+          "t": 433,
+          "pred": 0.486927,
+          "oracle": 0.36412,
+          "success": true,
+          "RE": 0.33727
+        },
+        {
+          "t": 435,
+          "pred": 0.469473,
+          "oracle": 0.418671,
+          "success": true,
+          "RE": 0.12134
+        },
+        {
+          "t": 437,
+          "pred": 0.063224,
+          "oracle": 0.24119,
+          "success": true,
+          "RE": 0.737868
+        },
+        {
+          "t": 440,
+          "pred": 0.489924,
+          "oracle": 0.439208,
+          "success": true,
+          "RE": 0.115473
+        },
+        {
+          "t": 442,
+          "pred": 0.362746,
+          "oracle": 0.493808,
+          "success": true,
+          "RE": 0.265411
+        },
+        {
+          "t": 447,
+          "pred": 0.485504,
+          "oracle": 0.453975,
+          "success": true,
+          "RE": 0.069451
+        },
+        {
+          "t": 449,
+          "pred": 0.122349,
+          "oracle": 0.284442,
+          "success": true,
+          "RE": 0.569865
+        }
+      ]
+    },
+    "Best-Logit": {
+      "precision": 0.824034,
+      "mean_RE": 0.979442,
+      "median_RE": 0.996509,
+      "n_samples": 233,
+      "per_sample": [
+        {
+          "t": 0,
+          "pred": 0.000868,
+          "oracle": 0.511322,
+          "success": false,
+          "RE": 0.998303
+        },
+        {
+          "t": 1,
+          "pred": 0.000381,
+          "oracle": 0.393229,
+          "success": true,
+          "RE": 0.99903
+        },
+        {
+          "t": 3,
+          "pred": 0.002778,
+          "oracle": 0.428272,
+          "success": true,
+          "RE": 0.993513
+        },
+        {
+          "t": 4,
+          "pred": 0.002284,
+          "oracle": 0.500446,
+          "success": false,
+          "RE": 0.995436
+        },
+        {
+          "t": 5,
+          "pred": 0.000122,
+          "oracle": 0.652756,
+          "success": false,
+          "RE": 0.999814
+        },
+        {
+          "t": 6,
+          "pred": 0.000435,
+          "oracle": 0.277312,
+          "success": true,
+          "RE": 0.998431
+        },
+        {
+          "t": 7,
+          "pred": 0.000241,
+          "oracle": 0.489915,
+          "success": true,
+          "RE": 0.999508
+        },
+        {
+          "t": 9,
+          "pred": 4.9e-05,
+          "oracle": 0.364165,
+          "success": true,
+          "RE": 0.999865
+        },
+        {
+          "t": 10,
+          "pred": 0.007228,
+          "oracle": 0.291629,
+          "success": true,
+          "RE": 0.975216
+        },
+        {
+          "t": 13,
+          "pred": 0.002152,
+          "oracle": 0.469529,
+          "success": true,
+          "RE": 0.995416
+        },
+        {
+          "t": 14,
+          "pred": 0.004281,
+          "oracle": 0.522851,
+          "success": false,
+          "RE": 0.991812
+        },
+        {
+          "t": 17,
+          "pred": 0.014153,
+          "oracle": 0.315732,
+          "success": true,
+          "RE": 0.955175
+        },
+        {
+          "t": 19,
+          "pred": 0.004385,
+          "oracle": 0.477873,
+          "success": true,
+          "RE": 0.990824
+        },
+        {
+          "t": 22,
+          "pred": 0.001215,
+          "oracle": 0.335985,
+          "success": true,
+          "RE": 0.996383
+        },
+        {
+          "t": 24,
+          "pred": 0.004961,
+          "oracle": 0.354907,
+          "success": true,
+          "RE": 0.986022
+        },
+        {
+          "t": 27,
+          "pred": 0.001695,
+          "oracle": 0.485562,
+          "success": true,
+          "RE": 0.996509
+        },
+        {
+          "t": 28,
+          "pred": 0.017293,
+          "oracle": 0.327105,
+          "success": true,
+          "RE": 0.947134
+        },
+        {
+          "t": 30,
+          "pred": 0.000197,
+          "oracle": 0.478368,
+          "success": true,
+          "RE": 0.999588
+        },
+        {
+          "t": 33,
+          "pred": 0.0208,
+          "oracle": 0.48949,
+          "success": true,
+          "RE": 0.957506
+        },
+        {
+          "t": 34,
+          "pred": 0.009033,
+          "oracle": 0.439902,
+          "success": true,
+          "RE": 0.979467
+        },
+        {
+          "t": 36,
+          "pred": 0.001365,
+          "oracle": 0.570503,
+          "success": false,
+          "RE": 0.997607
+        },
+        {
+          "t": 37,
+          "pred": 0.010471,
+          "oracle": 0.562005,
+          "success": false,
+          "RE": 0.981368
+        },
+        {
+          "t": 40,
+          "pred": 0.003751,
+          "oracle": 0.408189,
+          "success": true,
+          "RE": 0.990811
+        },
+        {
+          "t": 42,
+          "pred": 0.000306,
+          "oracle": 0.44603,
+          "success": true,
+          "RE": 0.999315
+        },
+        {
+          "t": 46,
+          "pred": 0.003873,
+          "oracle": 0.354585,
+          "success": true,
+          "RE": 0.989077
+        },
+        {
+          "t": 49,
+          "pred": 0.009916,
+          "oracle": 0.432853,
+          "success": true,
+          "RE": 0.977091
+        },
+        {
+          "t": 51,
+          "pred": 0.000288,
+          "oracle": 0.506618,
+          "success": false,
+          "RE": 0.999431
+        },
+        {
+          "t": 52,
+          "pred": 0.000343,
+          "oracle": 0.484701,
+          "success": true,
+          "RE": 0.999293
+        },
+        {
+          "t": 55,
+          "pred": 0.01424,
+          "oracle": 0.365014,
+          "success": true,
+          "RE": 0.960987
+        },
+        {
+          "t": 56,
+          "pred": 0.011271,
+          "oracle": 0.448677,
+          "success": true,
+          "RE": 0.974878
+        },
+        {
+          "t": 58,
+          "pred": 0.000658,
+          "oracle": 0.633916,
+          "success": false,
+          "RE": 0.998963
+        },
+        {
+          "t": 61,
+          "pred": 0.000719,
+          "oracle": 0.352736,
+          "success": true,
+          "RE": 0.997961
+        },
+        {
+          "t": 63,
+          "pred": 0.002428,
+          "oracle": 0.358527,
+          "success": true,
+          "RE": 0.993227
+        },
+        {
+          "t": 65,
+          "pred": 0.00032,
+          "oracle": 0.470079,
+          "success": true,
+          "RE": 0.999318
+        },
+        {
+          "t": 66,
+          "pred": 0.000415,
+          "oracle": 0.555628,
+          "success": false,
+          "RE": 0.999253
+        },
+        {
+          "t": 68,
+          "pred": 0.063264,
+          "oracle": 0.384849,
+          "success": true,
+          "RE": 0.835615
+        },
+        {
+          "t": 70,
+          "pred": 0.028804,
+          "oracle": 0.373419,
+          "success": true,
+          "RE": 0.922865
+        },
+        {
+          "t": 71,
+          "pred": 0.003223,
+          "oracle": 0.448546,
+          "success": true,
+          "RE": 0.992816
+        },
+        {
+          "t": 74,
+          "pred": 0.000808,
+          "oracle": 0.405695,
+          "success": true,
+          "RE": 0.998009
+        },
+        {
+          "t": 75,
+          "pred": 2e-06,
+          "oracle": 0.365727,
+          "success": true,
+          "RE": 0.999995
+        },
+        {
+          "t": 78,
+          "pred": 0.009566,
+          "oracle": 0.439912,
+          "success": true,
+          "RE": 0.978256
+        },
+        {
+          "t": 79,
+          "pred": 0.010153,
+          "oracle": 0.372432,
+          "success": true,
+          "RE": 0.972738
+        },
+        {
+          "t": 80,
+          "pred": 0.000525,
+          "oracle": 0.485783,
+          "success": true,
+          "RE": 0.998919
+        },
+        {
+          "t": 82,
+          "pred": 0.002658,
+          "oracle": 0.59849,
+          "success": false,
+          "RE": 0.99556
+        },
+        {
+          "t": 84,
+          "pred": 0.022264,
+          "oracle": 0.39375,
+          "success": true,
+          "RE": 0.943457
+        },
+        {
+          "t": 89,
+          "pred": 0.012628,
+          "oracle": 0.417537,
+          "success": true,
+          "RE": 0.969756
+        },
+        {
+          "t": 90,
+          "pred": 0.005567,
+          "oracle": 0.379037,
+          "success": true,
+          "RE": 0.985314
+        },
+        {
+          "t": 92,
+          "pred": 0.0,
+          "oracle": 0.247831,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 94,
+          "pred": 0.0,
+          "oracle": 0.411191,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 96,
+          "pred": 0.0,
+          "oracle": 0.270485,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 97,
+          "pred": 0.0,
+          "oracle": 0.24907,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 99,
+          "pred": 0.0,
+          "oracle": 0.461514,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 101,
+          "pred": 0.001019,
+          "oracle": 0.547708,
+          "success": false,
+          "RE": 0.998139
+        },
+        {
+          "t": 102,
+          "pred": 0.0,
+          "oracle": 0.371424,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 103,
+          "pred": 0.0,
+          "oracle": 0.390658,
+          "success": true,
+          "RE": 0.999999
+        },
+        {
+          "t": 104,
+          "pred": 2.4e-05,
+          "oracle": 0.486416,
+          "success": true,
+          "RE": 0.999951
+        },
+        {
+          "t": 105,
+          "pred": 0.0,
+          "oracle": 0.294485,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 107,
+          "pred": 2.9e-05,
+          "oracle": 0.438227,
+          "success": true,
+          "RE": 0.999935
+        },
+        {
+          "t": 109,
+          "pred": 0.0,
+          "oracle": 0.356298,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 110,
+          "pred": 0.0,
+          "oracle": 0.437015,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 116,
+          "pred": 0.0,
+          "oracle": 0.347433,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 117,
+          "pred": 0.0,
+          "oracle": 0.228219,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 118,
+          "pred": 0.0,
+          "oracle": 0.371285,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 121,
+          "pred": 0.005455,
+          "oracle": 0.636157,
+          "success": false,
+          "RE": 0.991425
+        },
+        {
+          "t": 122,
+          "pred": 0.0,
+          "oracle": 0.285888,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 129,
+          "pred": 0.0,
+          "oracle": 0.420748,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 134,
+          "pred": 0.0,
+          "oracle": 0.270344,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 136,
+          "pred": 0.0,
+          "oracle": 0.493807,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 138,
+          "pred": 0.003273,
+          "oracle": 0.50672,
+          "success": false,
+          "RE": 0.993542
+        },
+        {
+          "t": 140,
+          "pred": 0.0,
+          "oracle": 0.372096,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 141,
+          "pred": 0.0,
+          "oracle": 0.437591,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 145,
+          "pred": 0.003474,
+          "oracle": 0.332345,
+          "success": true,
+          "RE": 0.989547
+        },
+        {
+          "t": 147,
+          "pred": 0.001309,
+          "oracle": 0.323867,
+          "success": true,
+          "RE": 0.995957
+        },
+        {
+          "t": 148,
+          "pred": 0.001574,
+          "oracle": 0.459235,
+          "success": true,
+          "RE": 0.996573
+        },
+        {
+          "t": 149,
+          "pred": 0.001151,
+          "oracle": 0.449461,
+          "success": true,
+          "RE": 0.997439
+        },
+        {
+          "t": 150,
+          "pred": 0.001269,
+          "oracle": 0.295075,
+          "success": true,
+          "RE": 0.995701
+        },
+        {
+          "t": 151,
+          "pred": 0.013148,
+          "oracle": 0.452443,
+          "success": true,
+          "RE": 0.970941
+        },
+        {
+          "t": 152,
+          "pred": 0.019881,
+          "oracle": 0.415058,
+          "success": true,
+          "RE": 0.9521
+        },
+        {
+          "t": 153,
+          "pred": 0.009856,
+          "oracle": 0.45085,
+          "success": true,
+          "RE": 0.978138
+        },
+        {
+          "t": 154,
+          "pred": 0.001161,
+          "oracle": 0.473633,
+          "success": true,
+          "RE": 0.997549
+        },
+        {
+          "t": 158,
+          "pred": 0.002154,
+          "oracle": 0.388745,
+          "success": true,
+          "RE": 0.99446
+        },
+        {
+          "t": 161,
+          "pred": 0.002599,
+          "oracle": 0.427955,
+          "success": true,
+          "RE": 0.993928
+        },
+        {
+          "t": 163,
+          "pred": 0.001098,
+          "oracle": 0.48179,
+          "success": true,
+          "RE": 0.997721
+        },
+        {
+          "t": 164,
+          "pred": 0.039127,
+          "oracle": 0.283272,
+          "success": true,
+          "RE": 0.861874
+        },
+        {
+          "t": 166,
+          "pred": 0.021013,
+          "oracle": 0.47115,
+          "success": true,
+          "RE": 0.955401
+        },
+        {
+          "t": 167,
+          "pred": 0.000209,
+          "oracle": 0.273185,
+          "success": true,
+          "RE": 0.999236
+        },
+        {
+          "t": 170,
+          "pred": 0.011228,
+          "oracle": 0.34935,
+          "success": true,
+          "RE": 0.967859
+        },
+        {
+          "t": 172,
+          "pred": 0.00904,
+          "oracle": 0.50263,
+          "success": false,
+          "RE": 0.982015
+        },
+        {
+          "t": 173,
+          "pred": 0.000239,
+          "oracle": 0.551071,
+          "success": false,
+          "RE": 0.999566
+        },
+        {
+          "t": 174,
+          "pred": 0.004483,
+          "oracle": 0.47072,
+          "success": true,
+          "RE": 0.990477
+        },
+        {
+          "t": 175,
+          "pred": 0.010617,
+          "oracle": 0.452621,
+          "success": true,
+          "RE": 0.976543
+        },
+        {
+          "t": 176,
+          "pred": 0.000152,
+          "oracle": 0.587526,
+          "success": false,
+          "RE": 0.999741
+        },
+        {
+          "t": 178,
+          "pred": 0.017603,
+          "oracle": 0.374523,
+          "success": true,
+          "RE": 0.953
+        },
+        {
+          "t": 182,
+          "pred": 0.001999,
+          "oracle": 0.501234,
+          "success": false,
+          "RE": 0.996012
+        },
+        {
+          "t": 189,
+          "pred": 0.068997,
+          "oracle": 0.326477,
+          "success": true,
+          "RE": 0.788661
+        },
+        {
+          "t": 190,
+          "pred": 0.003179,
+          "oracle": 0.308084,
+          "success": true,
+          "RE": 0.98968
+        },
+        {
+          "t": 191,
+          "pred": 0.001956,
+          "oracle": 0.480418,
+          "success": true,
+          "RE": 0.995928
+        },
+        {
+          "t": 192,
+          "pred": 0.012364,
+          "oracle": 0.37446,
+          "success": true,
+          "RE": 0.966981
+        },
+        {
+          "t": 194,
+          "pred": 0.022923,
+          "oracle": 0.41949,
+          "success": true,
+          "RE": 0.945354
+        },
+        {
+          "t": 196,
+          "pred": 9e-06,
+          "oracle": 0.457651,
+          "success": true,
+          "RE": 0.99998
+        },
+        {
+          "t": 199,
+          "pred": 0.002241,
+          "oracle": 0.376058,
+          "success": true,
+          "RE": 0.994042
+        },
+        {
+          "t": 202,
+          "pred": 0.018105,
+          "oracle": 0.368304,
+          "success": true,
+          "RE": 0.950842
+        },
+        {
+          "t": 203,
+          "pred": 0.021564,
+          "oracle": 0.376045,
+          "success": true,
+          "RE": 0.942656
+        },
+        {
+          "t": 204,
+          "pred": 3.4e-05,
+          "oracle": 0.443121,
+          "success": true,
+          "RE": 0.999922
+        },
+        {
+          "t": 205,
+          "pred": 0.012218,
+          "oracle": 0.348196,
+          "success": true,
+          "RE": 0.96491
+        },
+        {
+          "t": 206,
+          "pred": 7e-06,
+          "oracle": 0.399998,
+          "success": true,
+          "RE": 0.999983
+        },
+        {
+          "t": 207,
+          "pred": 0.000647,
+          "oracle": 0.346521,
+          "success": true,
+          "RE": 0.998132
+        },
+        {
+          "t": 208,
+          "pred": 0.016089,
+          "oracle": 0.360135,
+          "success": true,
+          "RE": 0.955325
+        },
+        {
+          "t": 209,
+          "pred": 0.122022,
+          "oracle": 0.453827,
+          "success": true,
+          "RE": 0.731127
+        },
+        {
+          "t": 211,
+          "pred": 0.000647,
+          "oracle": 0.303209,
+          "success": true,
+          "RE": 0.997866
+        },
+        {
+          "t": 215,
+          "pred": 0.005882,
+          "oracle": 0.371701,
+          "success": true,
+          "RE": 0.984174
+        },
+        {
+          "t": 217,
+          "pred": 0.003467,
+          "oracle": 0.457719,
+          "success": true,
+          "RE": 0.992425
+        },
+        {
+          "t": 218,
+          "pred": 0.002469,
+          "oracle": 0.360148,
+          "success": true,
+          "RE": 0.993145
+        },
+        {
+          "t": 223,
+          "pred": 8.7e-05,
+          "oracle": 0.458409,
+          "success": true,
+          "RE": 0.999811
+        },
+        {
+          "t": 225,
+          "pred": 0.000478,
+          "oracle": 0.420152,
+          "success": true,
+          "RE": 0.998863
+        },
+        {
+          "t": 226,
+          "pred": 0.00406,
+          "oracle": 0.381803,
+          "success": true,
+          "RE": 0.989367
+        },
+        {
+          "t": 227,
+          "pred": 0.001014,
+          "oracle": 0.460169,
+          "success": true,
+          "RE": 0.997796
+        },
+        {
+          "t": 233,
+          "pred": 0.000897,
+          "oracle": 0.451356,
+          "success": true,
+          "RE": 0.998012
+        },
+        {
+          "t": 234,
+          "pred": 7e-06,
+          "oracle": 0.504469,
+          "success": false,
+          "RE": 0.999985
+        },
+        {
+          "t": 235,
+          "pred": 0.0,
+          "oracle": 0.401288,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 237,
+          "pred": 0.0,
+          "oracle": 0.535417,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 239,
+          "pred": 0.000735,
+          "oracle": 0.610334,
+          "success": false,
+          "RE": 0.998795
+        },
+        {
+          "t": 240,
+          "pred": 6.6e-05,
+          "oracle": 0.360743,
+          "success": true,
+          "RE": 0.999817
+        },
+        {
+          "t": 242,
+          "pred": 4e-06,
+          "oracle": 0.429238,
+          "success": true,
+          "RE": 0.999991
+        },
+        {
+          "t": 243,
+          "pred": 0.0,
+          "oracle": 0.551223,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 247,
+          "pred": 0.000877,
+          "oracle": 0.413727,
+          "success": true,
+          "RE": 0.997881
+        },
+        {
+          "t": 248,
+          "pred": 0.0,
+          "oracle": 0.422694,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 249,
+          "pred": 2e-06,
+          "oracle": 0.473711,
+          "success": true,
+          "RE": 0.999995
+        },
+        {
+          "t": 250,
+          "pred": 0.002151,
+          "oracle": 0.481948,
+          "success": true,
+          "RE": 0.995537
+        },
+        {
+          "t": 251,
+          "pred": 0.002134,
+          "oracle": 0.484722,
+          "success": true,
+          "RE": 0.995598
+        },
+        {
+          "t": 254,
+          "pred": 0.0,
+          "oracle": 0.569976,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 256,
+          "pred": 0.0,
+          "oracle": 0.423971,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 259,
+          "pred": 0.0,
+          "oracle": 0.281636,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 260,
+          "pred": 0.0,
+          "oracle": 0.499461,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 263,
+          "pred": 0.0,
+          "oracle": 0.3223,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 264,
+          "pred": 0.001767,
+          "oracle": 0.463697,
+          "success": true,
+          "RE": 0.99619
+        },
+        {
+          "t": 268,
+          "pred": 9e-06,
+          "oracle": 0.454086,
+          "success": true,
+          "RE": 0.99998
+        },
+        {
+          "t": 272,
+          "pred": 0.0,
+          "oracle": 0.49387,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 275,
+          "pred": 0.0,
+          "oracle": 0.363028,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 276,
+          "pred": 0.0,
+          "oracle": 0.426331,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 279,
+          "pred": 0.000522,
+          "oracle": 0.669135,
+          "success": false,
+          "RE": 0.999219
+        },
+        {
+          "t": 282,
+          "pred": 0.427016,
+          "oracle": 0.433197,
+          "success": true,
+          "RE": 0.014268
+        },
+        {
+          "t": 283,
+          "pred": 0.002628,
+          "oracle": 0.399711,
+          "success": true,
+          "RE": 0.993425
+        },
+        {
+          "t": 285,
+          "pred": 0.001831,
+          "oracle": 0.516997,
+          "success": false,
+          "RE": 0.996458
+        },
+        {
+          "t": 286,
+          "pred": 0.001008,
+          "oracle": 0.485018,
+          "success": true,
+          "RE": 0.997922
+        },
+        {
+          "t": 288,
+          "pred": 0.0118,
+          "oracle": 0.315789,
+          "success": true,
+          "RE": 0.962634
+        },
+        {
+          "t": 290,
+          "pred": 0.017471,
+          "oracle": 0.457136,
+          "success": true,
+          "RE": 0.961782
+        },
+        {
+          "t": 291,
+          "pred": 0.005987,
+          "oracle": 0.366064,
+          "success": true,
+          "RE": 0.983646
+        },
+        {
+          "t": 295,
+          "pred": 0.019345,
+          "oracle": 0.400255,
+          "success": true,
+          "RE": 0.951669
+        },
+        {
+          "t": 296,
+          "pred": 0.003127,
+          "oracle": 0.504224,
+          "success": false,
+          "RE": 0.993798
+        },
+        {
+          "t": 297,
+          "pred": 9.9e-05,
+          "oracle": 0.370401,
+          "success": true,
+          "RE": 0.999733
+        },
+        {
+          "t": 299,
+          "pred": 0.003133,
+          "oracle": 0.464634,
+          "success": true,
+          "RE": 0.993257
+        },
+        {
+          "t": 301,
+          "pred": 0.015966,
+          "oracle": 0.495428,
+          "success": true,
+          "RE": 0.967772
+        },
+        {
+          "t": 302,
+          "pred": 0.002929,
+          "oracle": 0.4069,
+          "success": true,
+          "RE": 0.992802
+        },
+        {
+          "t": 303,
+          "pred": 0.02159,
+          "oracle": 0.470723,
+          "success": true,
+          "RE": 0.954135
+        },
+        {
+          "t": 304,
+          "pred": 0.005781,
+          "oracle": 0.508496,
+          "success": false,
+          "RE": 0.988631
+        },
+        {
+          "t": 305,
+          "pred": 0.001318,
+          "oracle": 0.36653,
+          "success": true,
+          "RE": 0.996403
+        },
+        {
+          "t": 307,
+          "pred": 0.000947,
+          "oracle": 0.374484,
+          "success": true,
+          "RE": 0.99747
+        },
+        {
+          "t": 311,
+          "pred": 0.001169,
+          "oracle": 0.464763,
+          "success": true,
+          "RE": 0.997485
+        },
+        {
+          "t": 312,
+          "pred": 0.00052,
+          "oracle": 0.443645,
+          "success": true,
+          "RE": 0.998828
+        },
+        {
+          "t": 314,
+          "pred": 0.003002,
+          "oracle": 0.440274,
+          "success": true,
+          "RE": 0.993182
+        },
+        {
+          "t": 315,
+          "pred": 0.011845,
+          "oracle": 0.412888,
+          "success": true,
+          "RE": 0.971312
+        },
+        {
+          "t": 316,
+          "pred": 7.8e-05,
+          "oracle": 0.310197,
+          "success": true,
+          "RE": 0.99975
+        },
+        {
+          "t": 319,
+          "pred": 0.006579,
+          "oracle": 0.499477,
+          "success": true,
+          "RE": 0.986828
+        },
+        {
+          "t": 320,
+          "pred": 0.008617,
+          "oracle": 0.460726,
+          "success": true,
+          "RE": 0.981298
+        },
+        {
+          "t": 321,
+          "pred": 0.004636,
+          "oracle": 0.339493,
+          "success": true,
+          "RE": 0.986344
+        },
+        {
+          "t": 322,
+          "pred": 0.001588,
+          "oracle": 0.383167,
+          "success": true,
+          "RE": 0.995855
+        },
+        {
+          "t": 323,
+          "pred": 0.210635,
+          "oracle": 0.418396,
+          "success": true,
+          "RE": 0.496567
+        },
+        {
+          "t": 324,
+          "pred": 0.00023,
+          "oracle": 0.515901,
+          "success": false,
+          "RE": 0.999554
+        },
+        {
+          "t": 327,
+          "pred": 0.018258,
+          "oracle": 0.45253,
+          "success": true,
+          "RE": 0.959653
+        },
+        {
+          "t": 331,
+          "pred": 0.00202,
+          "oracle": 0.29931,
+          "success": true,
+          "RE": 0.993252
+        },
+        {
+          "t": 333,
+          "pred": 0.001816,
+          "oracle": 0.48608,
+          "success": true,
+          "RE": 0.996264
+        },
+        {
+          "t": 339,
+          "pred": 0.01577,
+          "oracle": 0.416487,
+          "success": true,
+          "RE": 0.962136
+        },
+        {
+          "t": 340,
+          "pred": 0.021766,
+          "oracle": 0.405251,
+          "success": true,
+          "RE": 0.946291
+        },
+        {
+          "t": 341,
+          "pred": 0.001697,
+          "oracle": 0.406631,
+          "success": true,
+          "RE": 0.995827
+        },
+        {
+          "t": 342,
+          "pred": 0.019459,
+          "oracle": 0.429027,
+          "success": true,
+          "RE": 0.954644
+        },
+        {
+          "t": 344,
+          "pred": 0.036693,
+          "oracle": 0.347967,
+          "success": true,
+          "RE": 0.894552
+        },
+        {
+          "t": 345,
+          "pred": 0.007469,
+          "oracle": 0.479905,
+          "success": true,
+          "RE": 0.984436
+        },
+        {
+          "t": 346,
+          "pred": 0.002065,
+          "oracle": 0.441302,
+          "success": true,
+          "RE": 0.995321
+        },
+        {
+          "t": 348,
+          "pred": 0.002818,
+          "oracle": 0.460233,
+          "success": true,
+          "RE": 0.993877
+        },
+        {
+          "t": 349,
+          "pred": 0.009641,
+          "oracle": 0.462728,
+          "success": true,
+          "RE": 0.979164
+        },
+        {
+          "t": 350,
+          "pred": 0.002185,
+          "oracle": 0.494365,
+          "success": true,
+          "RE": 0.99558
+        },
+        {
+          "t": 352,
+          "pred": 0.001098,
+          "oracle": 0.354977,
+          "success": true,
+          "RE": 0.996908
+        },
+        {
+          "t": 354,
+          "pred": 0.004308,
+          "oracle": 0.290949,
+          "success": true,
+          "RE": 0.985195
+        },
+        {
+          "t": 355,
+          "pred": 0.002796,
+          "oracle": 0.345726,
+          "success": true,
+          "RE": 0.991912
+        },
+        {
+          "t": 356,
+          "pred": 0.010047,
+          "oracle": 0.448141,
+          "success": true,
+          "RE": 0.97758
+        },
+        {
+          "t": 359,
+          "pred": 6.3e-05,
+          "oracle": 0.469003,
+          "success": true,
+          "RE": 0.999867
+        },
+        {
+          "t": 360,
+          "pred": 0.025066,
+          "oracle": 0.433553,
+          "success": true,
+          "RE": 0.942185
+        },
+        {
+          "t": 361,
+          "pred": 0.001866,
+          "oracle": 0.381944,
+          "success": true,
+          "RE": 0.995113
+        },
+        {
+          "t": 362,
+          "pred": 0.003847,
+          "oracle": 0.504194,
+          "success": false,
+          "RE": 0.992369
+        },
+        {
+          "t": 365,
+          "pred": 0.030228,
+          "oracle": 0.504268,
+          "success": false,
+          "RE": 0.940056
+        },
+        {
+          "t": 368,
+          "pred": 0.003901,
+          "oracle": 0.586431,
+          "success": false,
+          "RE": 0.993348
+        },
+        {
+          "t": 369,
+          "pred": 0.002886,
+          "oracle": 0.484935,
+          "success": true,
+          "RE": 0.994048
+        },
+        {
+          "t": 370,
+          "pred": 8.5e-05,
+          "oracle": 0.393594,
+          "success": true,
+          "RE": 0.999783
+        },
+        {
+          "t": 371,
+          "pred": 0.0,
+          "oracle": 0.52041,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 374,
+          "pred": 6e-06,
+          "oracle": 0.375194,
+          "success": true,
+          "RE": 0.999983
+        },
+        {
+          "t": 376,
+          "pred": 0.0,
+          "oracle": 0.610266,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 378,
+          "pred": 0.0,
+          "oracle": 0.573423,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 379,
+          "pred": 0.0,
+          "oracle": 0.502712,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 380,
+          "pred": 0.0,
+          "oracle": 0.470856,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 382,
+          "pred": 0.0,
+          "oracle": 0.42499,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 385,
+          "pred": 0.0,
+          "oracle": 0.391447,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 389,
+          "pred": 0.000111,
+          "oracle": 0.555771,
+          "success": false,
+          "RE": 0.999801
+        },
+        {
+          "t": 391,
+          "pred": 0.0,
+          "oracle": 0.533155,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 392,
+          "pred": 0.0,
+          "oracle": 0.475876,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 393,
+          "pred": 0.0,
+          "oracle": 0.434622,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 398,
+          "pred": 0.0,
+          "oracle": 0.407767,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 401,
+          "pred": 0.0,
+          "oracle": 0.380739,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 402,
+          "pred": 0.0,
+          "oracle": 0.446164,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 405,
+          "pred": 0.0,
+          "oracle": 0.383322,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 406,
+          "pred": 0.0,
+          "oracle": 0.39062,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 408,
+          "pred": 0.0,
+          "oracle": 0.293374,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 409,
+          "pred": 0.0,
+          "oracle": 0.380927,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 411,
+          "pred": 0.0,
+          "oracle": 0.428338,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 413,
+          "pred": 0.0,
+          "oracle": 0.269298,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 414,
+          "pred": 0.000489,
+          "oracle": 0.347726,
+          "success": true,
+          "RE": 0.998594
+        },
+        {
+          "t": 417,
+          "pred": 0.0,
+          "oracle": 0.465641,
+          "success": true,
+          "RE": 1.0
+        },
+        {
+          "t": 418,
+          "pred": 0.0,
+          "oracle": 0.545729,
+          "success": false,
+          "RE": 1.0
+        },
+        {
+          "t": 420,
+          "pred": 0.03108,
+          "oracle": 0.462251,
+          "success": true,
+          "RE": 0.932763
+        },
+        {
+          "t": 421,
+          "pred": 0.003471,
+          "oracle": 0.346506,
+          "success": true,
+          "RE": 0.989984
+        },
+        {
+          "t": 423,
+          "pred": 0.000667,
+          "oracle": 0.534023,
+          "success": false,
+          "RE": 0.998751
+        },
+        {
+          "t": 424,
+          "pred": 0.000192,
+          "oracle": 0.596766,
+          "success": false,
+          "RE": 0.999679
+        },
+        {
+          "t": 425,
+          "pred": 0.00167,
+          "oracle": 0.410522,
+          "success": true,
+          "RE": 0.995933
+        },
+        {
+          "t": 426,
+          "pred": 0.006185,
+          "oracle": 0.447807,
+          "success": true,
+          "RE": 0.986188
+        },
+        {
+          "t": 428,
+          "pred": 0.014691,
+          "oracle": 0.383317,
+          "success": true,
+          "RE": 0.961674
+        },
+        {
+          "t": 430,
+          "pred": 8.3e-05,
+          "oracle": 0.536975,
+          "success": false,
+          "RE": 0.999845
+        },
+        {
+          "t": 433,
+          "pred": 0.017253,
+          "oracle": 0.343893,
+          "success": true,
+          "RE": 0.949831
+        },
+        {
+          "t": 435,
+          "pred": 0.023232,
+          "oracle": 0.403937,
+          "success": true,
+          "RE": 0.942486
+        },
+        {
+          "t": 437,
+          "pred": 0.000379,
+          "oracle": 0.446834,
+          "success": true,
+          "RE": 0.999151
+        },
+        {
+          "t": 440,
+          "pred": 0.013215,
+          "oracle": 0.420238,
+          "success": true,
+          "RE": 0.968552
+        },
+        {
+          "t": 442,
+          "pred": 0.001165,
+          "oracle": 0.524072,
+          "success": false,
+          "RE": 0.997777
+        },
+        {
+          "t": 447,
+          "pred": 0.005237,
+          "oracle": 0.434855,
+          "success": true,
+          "RE": 0.987956
+        },
+        {
+          "t": 449,
+          "pred": 0.000334,
+          "oracle": 0.415582,
+          "success": true,
+          "RE": 0.999196
+        }
+      ]
+    }
+  },
+  "diagnostics": {
+    "drift_count": 3,
+    "update_count": 447
+  }
+}
